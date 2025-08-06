@@ -25,14 +25,14 @@ export default function Index() {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               <a href="#courses" className="text-gray-700 hover:text-purple-600 transition-colors">Khóa học</a>
-              <a href="#instructors" className="text-gray-700 hover:text-purple-600 transition-colors">Giảng viên</a>
+              <Link to="/instructors" className="text-gray-700 hover:text-purple-600 transition-colors">Giảng viên</Link>
               <a href="#testimonials" className="text-gray-700 hover:text-purple-600 transition-colors">Đánh giá</a>
               <a href="#pricing" className="text-gray-700 hover:text-purple-600 transition-colors">Giá cả</a>
-              <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50">
-                Đăng nhập
+              <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50" asChild>
+                <Link to="/login">Đăng nhập</Link>
               </Button>
-              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                Dùng thử miễn phí
+              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" asChild>
+                <Link to="/register">Dùng thử miễn phí</Link>
               </Button>
             </nav>
 
@@ -50,14 +50,14 @@ export default function Index() {
             <nav className="md:hidden mt-4 pb-4 border-t border-purple-100 pt-4">
               <div className="flex flex-col space-y-4">
                 <a href="#courses" className="text-gray-700 hover:text-purple-600 transition-colors">Khóa học</a>
-                <a href="#instructors" className="text-gray-700 hover:text-purple-600 transition-colors">Giảng viên</a>
+                <Link to="/instructors" className="text-gray-700 hover:text-purple-600 transition-colors">Giảng viên</Link>
                 <a href="#testimonials" className="text-gray-700 hover:text-purple-600 transition-colors">Đánh giá</a>
                 <a href="#pricing" className="text-gray-700 hover:text-purple-600 transition-colors">Giá cả</a>
-                <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50">
-                  Đăng nhập
+                <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50" asChild>
+                  <Link to="/login">Đăng nhập</Link>
                 </Button>
-                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                  Dùng thử miễn phí
+                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" asChild>
+                  <Link to="/register">Dùng thử miễn phí</Link>
                 </Button>
               </div>
             </nav>
@@ -83,13 +83,17 @@ export default function Index() {
                 Từ cơ bản đến nâng cao, phù hợp với mọi trình độ.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-3">
-                  Bắt đầu ngay hôm nay
-                  <ChevronRight className="ml-2" size={20} />
+                <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-3" asChild>
+                  <Link to="/register">
+                    Bắt đầu ngay hôm nay
+                    <ChevronRight className="ml-2" size={20} />
+                  </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-2 border-purple-200 text-purple-600 hover:bg-purple-50 text-lg px-8 py-3">
-                  <Play className="mr-2" size={20} />
-                  Xem video giới thiệu
+                <Button size="lg" variant="outline" className="border-2 border-purple-200 text-purple-600 hover:bg-purple-50 text-lg px-8 py-3" asChild>
+                  <Link to="/about">
+                    <Play className="mr-2" size={20} />
+                    Xem video giới thiệu
+                  </Link>
                 </Button>
               </div>
               <div className="flex items-center space-x-8 text-sm text-gray-600">
@@ -211,8 +215,10 @@ export default function Index() {
                   </div>
                 </CardContent>
                 <CardFooter className="p-6 pt-0">
-                  <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                    Đăng ký ngay
+                  <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" asChild>
+                    <Link to={`/course/${index + 1}`}>
+                      Đăng ký ngay
+                    </Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -244,7 +250,7 @@ export default function Index() {
               },
               {
                 icon: <Clock className="w-8 h-8 text-purple-600" />,
-                title: "Học m��i lúc mọi nơi",
+                title: "Học mọi lúc mọi nơi",
                 description: "Truy cập trên mọi thiết bị, học theo lịch trình của bạn"
               },
               {
@@ -401,13 +407,16 @@ export default function Index() {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Button 
-                    className={`w-full ${plan.popular 
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
+                  <Button
+                    className={`w-full ${plan.popular
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
                       : 'bg-gray-900 hover:bg-gray-800'
                     }`}
+                    asChild
                   >
-                    Chọn gói này
+                    <Link to="/register">
+                      Chọn gói này
+                    </Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -427,11 +436,15 @@ export default function Index() {
             Dùng thử miễn phí 7 ngày, không cần thẻ tín dụng.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 py-3">
-              Dùng thử miễn phí 7 ngày
+            <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 py-3" asChild>
+              <Link to="/register">
+                Dùng thử miễn phí 7 ngày
+              </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-purple-600 text-lg px-8 py-3">
-              Tìm hiểu thêm
+            <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-purple-600 text-lg px-8 py-3" asChild>
+              <Link to="/about">
+                Tìm hiểu thêm
+              </Link>
             </Button>
           </div>
         </div>
@@ -460,27 +473,27 @@ export default function Index() {
             <div>
               <h3 className="font-semibold mb-4">Khóa học</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Yoga cơ bản</a></li>
-                <li><a href="#" className="hover:text-white">Hatha Yoga</a></li>
-                <li><a href="#" className="hover:text-white">Vinyasa Flow</a></li>
-                <li><a href="#" className="hover:text-white">Yin Yoga</a></li>
+                <li><Link to="/course/1" className="hover:text-white">Yoga cơ bản</Link></li>
+                <li><Link to="/course/2" className="hover:text-white">Hatha Yoga</Link></li>
+                <li><Link to="/course/3" className="hover:text-white">Vinyasa Flow</Link></li>
+                <li><Link to="/course/4" className="hover:text-white">Yin Yoga</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Hỗ trợ</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Trung tâm trợ giúp</a></li>
-                <li><a href="#" className="hover:text-white">Liên hệ</a></li>
-                <li><a href="#" className="hover:text-white">FAQ</a></li>
-                <li><a href="#" className="hover:text-white">Blog</a></li>
+                <li><Link to="/help" className="hover:text-white">Trung tâm trợ giúp</Link></li>
+                <li><Link to="/contact" className="hover:text-white">Liên hệ</Link></li>
+                <li><Link to="/help" className="hover:text-white">FAQ</Link></li>
+                <li><Link to="/about" className="hover:text-white">Blog</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Pháp lý</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Điều khoản sử dụng</a></li>
-                <li><a href="#" className="hover:text-white">Chính sách bảo mật</a></li>
-                <li><a href="#" className="hover:text-white">Chính sách hoàn tiền</a></li>
+                <li><Link to="/help" className="hover:text-white">Điều khoản sử dụng</Link></li>
+                <li><Link to="/help" className="hover:text-white">Chính sách bảo mật</Link></li>
+                <li><Link to="/help" className="hover:text-white">Chính sách hoàn tiền</Link></li>
               </ul>
             </div>
           </div>
