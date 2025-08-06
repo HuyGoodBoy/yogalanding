@@ -2,7 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Users, Award, Calendar, ArrowLeft, MapPin, Clock } from "lucide-react";
+import {
+  Star,
+  Users,
+  Award,
+  Calendar,
+  ArrowLeft,
+  MapPin,
+  Clock,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Instructors() {
@@ -24,8 +32,8 @@ export default function Instructors() {
       achievements: [
         "Chứng chỉ Yoga Alliance RYT-500",
         "Hoàn thành khóa đào tạo tại Rishikesh, Ấn Độ",
-        "Giải thưởng 'Giảng viên Yoga xuất sắc' 2023"
-      ]
+        "Giải thưởng 'Giảng viên Yoga xuất sắc' 2023",
+      ],
     },
     {
       id: 2,
@@ -39,13 +47,17 @@ export default function Instructors() {
       location: "Hà Nội",
       bio: "Đức chuyên về Yin Yoga và thiền định. Anh mang đến những bài tập sâu sắc giúp học viên tìm thấy sự bình an trong tâm hồn.",
       avatar: "/placeholder.svg",
-      courses: ["Yin Yoga Healing", "Mindfulness Meditation", "Stress Relief Yoga"],
+      courses: [
+        "Yin Yoga Healing",
+        "Mindfulness Meditation",
+        "Stress Relief Yoga",
+      ],
       languages: ["Tiếng Việt", "English"],
       achievements: [
         "Chứng chỉ Yin Yoga từ Bernie Clark",
         "Hoàn thành khóa Vipassana 10 ngày",
-        "Tác giả sách 'Yoga và Thiền trong cuộc sống'"
-      ]
+        "Tác giả sách 'Yoga và Thiền trong cuộc sống'",
+      ],
     },
     {
       id: 3,
@@ -64,8 +76,8 @@ export default function Instructors() {
       achievements: [
         "Chứng chỉ Prenatal Yoga quốc tế",
         "Chuyên gia tư vấn thai kỳ",
-        "Diễn giả hội thảo 'Yoga cho mẹ và bé'"
-      ]
+        "Diễn giả hội thảo 'Yoga cho mẹ và bé'",
+      ],
     },
     {
       id: 4,
@@ -84,9 +96,9 @@ export default function Instructors() {
       achievements: [
         "Được ủy quyền giảng dạy Ashtanga",
         "10 năm tập luyện Ashtanga",
-        "Huấn luyện viên thể hình chuyển sang Yoga"
-      ]
-    }
+        "Huấn luyện viên thể hình chuyển sang Yoga",
+      ],
+    },
   ];
 
   return (
@@ -103,7 +115,10 @@ export default function Instructors() {
                 YogaFlow
               </span>
             </Link>
-            <Link to="/" className="flex items-center text-gray-600 hover:text-purple-600">
+            <Link
+              to="/"
+              className="flex items-center text-gray-600 hover:text-purple-600"
+            >
               <ArrowLeft className="mr-2" size={20} />
               Quay về trang chủ
             </Link>
@@ -116,11 +131,15 @@ export default function Instructors() {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Đội ngũ giảng viên
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"> chuyên nghiệp</span>
+            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              {" "}
+              chuyên nghiệp
+            </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Gặp gỡ những giảng viên yoga tài năng và giàu kinh nghiệm, những người sẽ đồng hành cùng bạn 
-            trong hành trình khám phá sức mạnh bên trong.
+            Gặp gỡ những giảng viên yoga tài năng và giàu kinh nghiệm, những
+            người sẽ đồng hành cùng bạn trong hành trình khám phá sức mạnh bên
+            trong.
           </p>
         </div>
       </section>
@@ -130,17 +149,31 @@ export default function Instructors() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8">
             {instructors.map((instructor) => (
-              <Card key={instructor.id} className="group hover:shadow-xl transition-all duration-300 border-gray-100">
+              <Card
+                key={instructor.id}
+                className="group hover:shadow-xl transition-all duration-300 border-gray-100"
+              >
                 <CardContent className="p-8">
                   <div className="flex items-start space-x-6 mb-6">
                     <Avatar className="w-24 h-24 ring-4 ring-purple-100">
-                      <AvatarImage src={instructor.avatar} alt={instructor.name} />
-                      <AvatarFallback className="text-xl">{instructor.name.charAt(0)}</AvatarFallback>
+                      <AvatarImage
+                        src={instructor.avatar}
+                        alt={instructor.name}
+                      />
+                      <AvatarFallback className="text-xl">
+                        {instructor.name.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-2">{instructor.name}</h3>
-                      <p className="text-purple-600 font-semibold mb-1">{instructor.title}</p>
-                      <p className="text-gray-600 mb-3">{instructor.speciality}</p>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                        {instructor.name}
+                      </h3>
+                      <p className="text-purple-600 font-semibold mb-1">
+                        {instructor.title}
+                      </p>
+                      <p className="text-gray-600 mb-3">
+                        {instructor.speciality}
+                      </p>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
                         <div className="flex items-center">
                           <MapPin className="w-4 h-4 mr-1" />
@@ -154,28 +187,36 @@ export default function Instructors() {
                     </div>
                   </div>
 
-                  <p className="text-gray-700 mb-6 leading-relaxed">{instructor.bio}</p>
+                  <p className="text-gray-700 mb-6 leading-relaxed">
+                    {instructor.bio}
+                  </p>
 
                   {/* Stats */}
                   <div className="grid grid-cols-3 gap-4 mb-6">
                     <div className="text-center p-3 bg-purple-50 rounded-lg">
                       <div className="flex items-center justify-center mb-1">
                         <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
-                        <span className="font-bold text-lg">{instructor.rating}</span>
+                        <span className="font-bold text-lg">
+                          {instructor.rating}
+                        </span>
                       </div>
                       <p className="text-xs text-gray-600">Đánh giá</p>
                     </div>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <div className="flex items-center justify-center mb-1">
                         <Users className="w-4 h-4 text-blue-600 mr-1" />
-                        <span className="font-bold text-lg">{instructor.students}</span>
+                        <span className="font-bold text-lg">
+                          {instructor.students}
+                        </span>
                       </div>
                       <p className="text-xs text-gray-600">Học viên</p>
                     </div>
                     <div className="text-center p-3 bg-green-50 rounded-lg">
                       <div className="flex items-center justify-center mb-1">
                         <Award className="w-4 h-4 text-green-600 mr-1" />
-                        <span className="font-bold text-lg">{instructor.courses.length}</span>
+                        <span className="font-bold text-lg">
+                          {instructor.courses.length}
+                        </span>
                       </div>
                       <p className="text-xs text-gray-600">Khóa học</p>
                     </div>
@@ -183,10 +224,16 @@ export default function Instructors() {
 
                   {/* Courses */}
                   <div className="mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Khóa học giảng dạy:</h4>
+                    <h4 className="font-semibold text-gray-900 mb-3">
+                      Khóa học giảng dạy:
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                       {instructor.courses.map((course, index) => (
-                        <Badge key={index} variant="outline" className="border-purple-200 text-purple-700">
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="border-purple-200 text-purple-700"
+                        >
                           {course}
                         </Badge>
                       ))}
@@ -195,10 +242,15 @@ export default function Instructors() {
 
                   {/* Certifications */}
                   <div className="mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Chứng chỉ & Thành tựu:</h4>
+                    <h4 className="font-semibold text-gray-900 mb-3">
+                      Chứng chỉ & Thành tựu:
+                    </h4>
                     <ul className="space-y-1">
                       {instructor.achievements.map((achievement, index) => (
-                        <li key={index} className="text-sm text-gray-700 flex items-start">
+                        <li
+                          key={index}
+                          className="text-sm text-gray-700 flex items-start"
+                        >
                           <div className="w-1.5 h-1.5 bg-purple-600 rounded-full mt-2 mr-2 flex-shrink-0"></div>
                           {achievement}
                         </li>
@@ -208,10 +260,15 @@ export default function Instructors() {
 
                   {/* Languages */}
                   <div className="mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Ngôn ngữ giảng dạy:</h4>
+                    <h4 className="font-semibold text-gray-900 mb-3">
+                      Ngôn ngữ giảng dạy:
+                    </h4>
                     <div className="flex space-x-2">
                       {instructor.languages.map((language, index) => (
-                        <Badge key={index} className="bg-gray-100 text-gray-700 hover:bg-gray-100">
+                        <Badge
+                          key={index}
+                          className="bg-gray-100 text-gray-700 hover:bg-gray-100"
+                        >
                           {language}
                         </Badge>
                       ))}
@@ -223,7 +280,10 @@ export default function Instructors() {
                     <Button className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                       Xem khóa học
                     </Button>
-                    <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50">
+                    <Button
+                      variant="outline"
+                      className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                    >
                       Liên hệ
                     </Button>
                   </div>
@@ -241,13 +301,21 @@ export default function Instructors() {
             Bạn có muốn gia nhập đội ngũ của chúng tôi?
           </h2>
           <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-            Chúng tôi luôn tìm kiếm những giảng viên yoga tài năng và đam mê để mở rộng đội ngũ.
+            Chúng tôi luôn tìm kiếm những giảng viên yoga tài năng và đam mê để
+            mở rộng đội ngũ.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+            <Button
+              size="lg"
+              className="bg-white text-purple-600 hover:bg-gray-100"
+            >
               Ứng tuyển ngay
             </Button>
-            <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-purple-600">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-2 border-white text-white hover:bg-white hover:text-purple-600"
+            >
               Tìm hiểu thêm
             </Button>
           </div>
@@ -266,24 +334,53 @@ export default function Instructors() {
                 <span className="text-xl font-bold">YogaFlow</span>
               </div>
               <p className="text-gray-400 mb-4">
-                Platform yoga online hàng đầu Việt Nam với đội ngũ giảng viên chuyên nghiệp.
+                Platform yoga online hàng đầu Việt Nam với đội ngũ giảng viên
+                chuyên nghiệp.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Liên kết nhanh</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/" className="hover:text-white">Trang chủ</Link></li>
-                <li><Link to="/courses" className="hover:text-white">Khóa học</Link></li>
-                <li><Link to="/instructors" className="hover:text-white">Giảng viên</Link></li>
-                <li><Link to="/about" className="hover:text-white">Về chúng tôi</Link></li>
+                <li>
+                  <Link to="/" className="hover:text-white">
+                    Trang chủ
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/courses" className="hover:text-white">
+                    Khóa học
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/instructors" className="hover:text-white">
+                    Giảng viên
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/about" className="hover:text-white">
+                    Về chúng tôi
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Hỗ trợ</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/help" className="hover:text-white">Trung tâm trợ giúp</Link></li>
-                <li><Link to="/contact" className="hover:text-white">Liên hệ</Link></li>
-                <li><Link to="/faq" className="hover:text-white">FAQ</Link></li>
+                <li>
+                  <Link to="/help" className="hover:text-white">
+                    Trung tâm trợ giúp
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" className="hover:text-white">
+                    Liên hệ
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/faq" className="hover:text-white">
+                    FAQ
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>

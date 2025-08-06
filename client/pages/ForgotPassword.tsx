@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Mail } from "lucide-react";
@@ -17,11 +23,14 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Link to="/login" className="flex items-center text-purple-600 hover:text-purple-700 mb-6">
+        <Link
+          to="/login"
+          className="flex items-center text-purple-600 hover:text-purple-700 mb-6"
+        >
           <ArrowLeft className="mr-2" size={20} />
           Quay lại đăng nhập
         </Link>
-        
+
         <Card className="border-0 shadow-xl">
           <CardHeader className="text-center pb-6">
             <div className="flex items-center justify-center space-x-2 mb-4">
@@ -32,39 +41,47 @@ export default function ForgotPassword() {
                 YogaFlow
               </span>
             </div>
-            
+
             {!emailSent ? (
               <>
-                <CardTitle className="text-2xl font-bold text-gray-900">Quên mật khẩu?</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900">
+                  Quên mật khẩu?
+                </CardTitle>
                 <CardDescription>
-                  Nhập email của bạn và chúng tôi sẽ gửi link để tạo mật khẩu mới.
+                  Nhập email của bạn và chúng tôi sẽ gửi link để tạo mật khẩu
+                  mới.
                 </CardDescription>
               </>
             ) : (
               <>
-                <CardTitle className="text-2xl font-bold text-gray-900">Kiểm tra email</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900">
+                  Kiểm tra email
+                </CardTitle>
                 <CardDescription>
                   Chúng tôi đã gửi link đặt lại mật khẩu đến email của bạn.
                 </CardDescription>
               </>
             )}
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             {!emailSent ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
+                  <Input
+                    id="email"
+                    type="email"
                     placeholder="your.email@example.com"
                     className="h-11"
                     required
                   />
                 </div>
-                
-                <Button type="submit" className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+
+                <Button
+                  type="submit"
+                  className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                >
                   Gửi link đặt lại mật khẩu
                 </Button>
               </form>
@@ -74,21 +91,25 @@ export default function ForgotPassword() {
                   <Mail className="w-8 h-8 text-green-600" />
                 </div>
                 <p className="text-gray-600">
-                  Nếu không thấy email, hãy kiểm tra thư mục spam hoặc thử gửi lại sau vài phút.
+                  Nếu không thấy email, hãy kiểm tra thư mục spam hoặc thử gửi
+                  lại sau vài phút.
                 </p>
-                <Button 
+                <Button
                   onClick={() => setEmailSent(false)}
-                  variant="outline" 
+                  variant="outline"
                   className="w-full h-11"
                 >
                   Gửi lại email
                 </Button>
               </div>
             )}
-            
+
             <div className="text-center text-sm text-gray-600">
               Nhớ mật khẩu?{" "}
-              <Link to="/login" className="text-purple-600 hover:text-purple-700 font-medium">
+              <Link
+                to="/login"
+                className="text-purple-600 hover:text-purple-700 font-medium"
+              >
                 Đăng nhập ngay
               </Link>
             </div>

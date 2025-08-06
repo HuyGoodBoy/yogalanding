@@ -18,7 +18,10 @@ export default function Terms() {
                 YogaFlow
               </span>
             </Link>
-            <Link to="/" className="flex items-center text-gray-600 hover:text-purple-600">
+            <Link
+              to="/"
+              className="flex items-center text-gray-600 hover:text-purple-600"
+            >
               <ArrowLeft className="mr-2" size={20} />
               Quay về trang chủ
             </Link>
@@ -34,25 +37,27 @@ export default function Terms() {
               <CardTitle className="text-3xl font-bold text-gray-900">
                 Điều khoản sử dụng
               </CardTitle>
-              <p className="text-gray-600">
-                Cập nhật lần cuối: 15/12/2024
-              </p>
+              <p className="text-gray-600">Cập nhật lần cuối: 15/12/2024</p>
             </CardHeader>
             <CardContent className="prose max-w-none">
               <p className="text-gray-700 leading-relaxed mb-6">
-                Trang này hiện đang được phát triển. Chúng tôi đang chuẩn bị nội dung chi tiết về điều khoản sử dụng dịch vụ YogaFlow.
+                Trang này hiện đang được phát triển. Chúng tôi đang chuẩn bị nội
+                dung chi tiết về điều khoản sử dụng dịch vụ YogaFlow.
               </p>
-              
+
               <div className="bg-purple-50 p-6 rounded-lg text-center">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">
                   Trang đang được phát triển
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Nội dung đầy đủ về điều khoản sử dụng sẽ sớm được cập nhật. 
+                  Nội dung đầy đủ về điều khoản sử dụng sẽ sớm được cập nhật.
                   Nếu bạn có thắc mắc, vui lòng liên hệ với chúng tôi.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button asChild className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                  <Button
+                    asChild
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  >
                     <Link to="/contact">Liên hệ hỗ trợ</Link>
                   </Button>
                   <Button variant="outline" asChild>
