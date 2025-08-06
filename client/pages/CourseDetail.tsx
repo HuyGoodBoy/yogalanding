@@ -48,7 +48,7 @@ export default function CourseDetail() {
     level: "Cơ bản",
     language: "Tiếng Việt",
     certificate: true,
-    image: "/placeholder.svg",
+    image: "/download.jpg",
     features: [
       "24 video bài học chất lượng HD",
       "Tài liệu PDF hướng dẫn chi tiết",
@@ -95,11 +95,9 @@ export default function CourseDetail() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">Y</span>
-              </div>
+              <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                YogaFlow
+                Thuý An yoga
               </span>
             </Link>
             <Link
@@ -156,10 +154,10 @@ export default function CourseDetail() {
               </div>
 
               <div className="flex items-center space-x-4 mb-6">
-                <Avatar className="w-12 h-12">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>NL</AvatarFallback>
-                </Avatar>
+                                      <Avatar className="w-12 h-12">
+                        <AvatarImage src="/images (1).jpg" />
+                        <AvatarFallback>NL</AvatarFallback>
+                      </Avatar>
                 <div>
                   <p className="font-medium text-gray-900">
                     {course.instructor}
@@ -266,7 +264,7 @@ export default function CourseDetail() {
                   <CardContent>
                     <div className="flex items-start space-x-4">
                       <Avatar className="w-20 h-20">
-                        <AvatarImage src="/placeholder.svg" />
+                        <AvatarImage src="/download.jpg" />
                         <AvatarFallback>NL</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">

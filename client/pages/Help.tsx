@@ -128,7 +128,7 @@ export default function Help() {
       category: "Khóa học",
       question: "Tôi có thể học trên điện thoại không?",
       answer:
-        "Có, website của chúng tôi tối ưu cho mọi thiết bị. Bạn cũng có thể tải app YogaFlow trên App Store hoặc Google Play.",
+                        "Có, website của chúng tôi tối ưu cho mọi thiết bị. Bạn cũng có thể tải app Thuý An yoga trên App Store hoặc Google Play.",
     },
   ];
 
@@ -143,7 +143,7 @@ export default function Help() {
     {
       icon: Mail,
       title: "Email hỗ trợ",
-      description: "support@yogaflow.vn",
+              description: "support@thuyanyoga.vn",
       action: "Gửi email",
       available: "Phản hồi trong 24h",
     },
@@ -167,11 +167,9 @@ export default function Help() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">Y</span>
-              </div>
+              <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                YogaFlow
+                Thuý An yoga
               </span>
             </Link>
             <Link
@@ -197,7 +195,7 @@ export default function Help() {
             </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            Tìm câu trả lời cho mọi thắc mắc về YogaFlow. Chúng tôi ở đây để hỗ
+            Tìm câu trả lời cho mọi thắc mắc về Thuý An yoga. Chúng tôi ở đây để hỗ
             trợ bạn.
           </p>
 
@@ -446,7 +444,7 @@ export default function Help() {
                   >
                     <Link to="/contact">Liên hệ hỗ trợ</Link>
                   </Button>
-                  <Button variant="outline">Gọi hotline: 1900 123 456</Button>
+                  <Button variant="outline">Gọi hotline: 0902200177</Button>
                 </div>
               </CardContent>
             </Card>
@@ -460,10 +458,8 @@ export default function Help() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">Y</span>
-                </div>
-                <span className="text-xl font-bold">YogaFlow</span>
+                <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
+                <span className="text-xl font-bold">Thuý An yoga</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Luôn ở đây để hỗ trợ hành trình yoga của bạn.
@@ -497,11 +493,7 @@ export default function Help() {
                     Khóa học
                   </Link>
                 </li>
-                <li>
-                  <Link to="/instructors" className="hover:text-white">
-                    Giảng viên
-                  </Link>
-                </li>
+
                 <li>
                   <Link to="/live" className="hover:text-white">
                     Live Classes
@@ -518,17 +510,17 @@ export default function Help() {
                 </li>
                 <li className="flex items-center">
                   <Phone className="w-4 h-4 mr-2" />
-                  1900 123 456
+                  0902200177
                 </li>
                 <li className="flex items-center">
                   <Mail className="w-4 h-4 mr-2" />
-                  support@yogaflow.vn
+                  yogathuyan.vn@gmail.com
                 </li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 YogaFlow. Tất cả quyền được bảo lưu.</p>
+            <p>&copy; 2024 Thuý An yoga. Tất cả quyền được bảo lưu.</p>
           </div>
         </div>
       </footer>

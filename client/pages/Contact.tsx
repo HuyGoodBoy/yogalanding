@@ -32,12 +32,12 @@ export default function Contact() {
     {
       icon: Phone,
       title: "Số điện thoại",
-      details: ["Hotline: 1900 123 456", "Tư vấn: 028 1234 5678"],
+      details: ["Hotline: 0902200177", "Tư vấn: 0902200177"],
     },
     {
       icon: Mail,
       title: "Email",
-      details: ["hello@yogaflow.vn", "support@yogaflow.vn"],
+              details: ["yogathuyan.vn@gmail.com", "yogathuyan.vn@gmail.com"],
     },
     {
       icon: Clock,
@@ -71,11 +71,9 @@ export default function Contact() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">Y</span>
-              </div>
+              <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                YogaFlow
+                Thuý An yoga
               </span>
             </Link>
             <Link
@@ -205,7 +203,7 @@ export default function Contact() {
                       className="rounded border-gray-300"
                     />
                     <Label htmlFor="consent" className="text-sm text-gray-600">
-                      Tôi đồng ý với việc YogaFlow sử dụng thông tin này để liên
+                      Tôi đồng ý với việc Thuý An yoga sử dụng thông tin này để liên
                       hệ và hỗ trợ tôi.
                     </Label>
                   </div>
@@ -299,21 +297,21 @@ export default function Contact() {
                 <div className="grid grid-cols-3 gap-4">
                   <Button variant="outline" className="h-12 p-2">
                     <img
-                      src="/placeholder.svg"
+                      src="/images.jpg"
                       alt="Facebook"
                       className="w-6 h-6"
                     />
                   </Button>
                   <Button variant="outline" className="h-12 p-2">
                     <img
-                      src="/placeholder.svg"
+                      src="/download.jpg"
                       alt="Instagram"
                       className="w-6 h-6"
                     />
                   </Button>
                   <Button variant="outline" className="h-12 p-2">
                     <img
-                      src="/placeholder.svg"
+                      src="/download (1).jpg"
                       alt="YouTube"
                       className="w-6 h-6"
                     />
@@ -367,7 +365,7 @@ export default function Contact() {
               {
                 question: "Làm thế nào để đăng ký khóa học?",
                 answer:
-                  "Bạn có thể đăng ký trực tiếp trên website hoặc liên hệ hotline 1900 123 456 để được hỗ trợ.",
+                  "Bạn có thể đăng ký trực tiếp trên website hoặc liên hệ hotline 0902200177 để được hỗ trợ.",
               },
               {
                 question: "Tôi có thể học lại bài đã học không?",
@@ -410,10 +408,8 @@ export default function Contact() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">Y</span>
-                </div>
-                <span className="text-xl font-bold">YogaFlow</span>
+                <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
+                <span className="text-xl font-bold">Thuý An yoga</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Kết nối với chúng tôi để bắt đầu hành trình yoga của bạn.
@@ -432,11 +428,7 @@ export default function Contact() {
                     Khóa học
                   </Link>
                 </li>
-                <li>
-                  <Link to="/instructors" className="hover:text-white">
-                    Giảng viên
-                  </Link>
-                </li>
+
                 <li>
                   <Link to="/about" className="hover:text-white">
                     Về chúng tôi
@@ -467,14 +459,14 @@ export default function Contact() {
             <div>
               <h3 className="font-semibold mb-4">Liên hệ</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li>📧 hello@yogaflow.vn</li>
+                <li>📧 hello@thuyanyoga.vn</li>
                 <li>📞 1900 123 456</li>
                 <li>📍 123 Nguyễn Huệ, Q1, HCM</li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 YogaFlow. Tất cả quyền được bảo lưu.</p>
+            <p>&copy; 2024 Thuý An yoga. Tất cả quyền được bảo lưu.</p>
           </div>
         </div>
       </footer>

@@ -31,11 +31,9 @@ export default function Index() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">Y</span>
-              </div>
+              <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                YogaFlow
+                Thuý An yoga
               </span>
             </div>
 
@@ -47,12 +45,7 @@ export default function Index() {
               >
                 Khóa học
               </a>
-              <Link
-                to="/instructors"
-                className="text-gray-700 hover:text-purple-600 transition-colors"
-              >
-                Giảng viên
-              </Link>
+
               <a
                 href="#testimonials"
                 className="text-gray-700 hover:text-purple-600 transition-colors"
@@ -99,12 +92,7 @@ export default function Index() {
                 >
                   Khóa học
                 </a>
-                <Link
-                  to="/instructors"
-                  className="text-gray-700 hover:text-purple-600 transition-colors"
-                >
-                  Giảng viên
-                </Link>
+
                 <a
                   href="#testimonials"
                   className="text-gray-700 hover:text-purple-600 transition-colors"
@@ -142,7 +130,7 @@ export default function Index() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <Badge className="mb-4 bg-purple-100 text-purple-700 hover:bg-purple-100">
-                🧘‍♀️ Platform Yoga Online #1 Việt Nam
+                🧘‍♀️ Thuý An yoga - Platform Yoga Online #1 Việt Nam
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Khám phá sức mạnh
@@ -195,7 +183,7 @@ export default function Index() {
               <div className="bg-gradient-to-r from-purple-400 to-pink-400 rounded-3xl p-8 transform rotate-3 shadow-2xl">
                 <div className="bg-white rounded-2xl p-6 transform -rotate-3">
                   <img
-                    src="/placeholder.svg"
+                    src="/images.jpg"
                     alt="Yoga instructor"
                     className="w-full h-64 object-cover rounded-xl"
                   />
@@ -246,7 +234,7 @@ export default function Index() {
                 students: "2,450",
                 price: "999,000₫",
                 level: "Cơ bản",
-                image: "/placeholder.svg",
+                image: "/download.jpg",
               },
               {
                 title: "Hatha Yoga Nâng Cao",
@@ -256,7 +244,7 @@ export default function Index() {
                 students: "1,820",
                 price: "1,499,000₫",
                 level: "Nâng cao",
-                image: "/placeholder.svg",
+                image: "/download (1).jpg",
               },
               {
                 title: "Vinyasa Flow",
@@ -266,7 +254,7 @@ export default function Index() {
                 students: "3,150",
                 price: "1,299,000₫",
                 level: "Trung cấp",
-                image: "/placeholder.svg",
+                image: "/download (2).jpg",
               },
             ].map((course, index) => (
               <Card
@@ -331,7 +319,7 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Tại sao chọn YogaFlow?
+              Tại sao chọn Thuý An yoga?
             </h2>
           </div>
 
@@ -392,7 +380,7 @@ export default function Index() {
                 content:
                   "Tôi đã thực hành yoga được 6 tháng và cảm thấy cơ thể linh hoạt hơn rất nhiều. Các bài học rất dễ hiểu và thầy cô rất tận tâm.",
                 rating: 5,
-                avatar: "/placeholder.svg",
+                avatar: "/images (1).jpg",
               },
               {
                 name: "Trần Văn Nam",
@@ -400,7 +388,7 @@ export default function Index() {
                 content:
                   "Công việc căng thẳng nhưng từ khi học yoga online tại đây, tôi cảm thấy tinh thần thư thái và tập trung hơn. Rất đáng đầu tư!",
                 rating: 5,
-                avatar: "/placeholder.svg",
+                avatar: "/download.jpg",
               },
               {
                 name: "Lê Thị Hương",
@@ -408,7 +396,7 @@ export default function Index() {
                 content:
                   "Khóa học Vinyasa Flow thật tuyệt vời! Tôi có thể học theo tốc độ của mình và các video rất chất lượng. Highly recommended!",
                 rating: 5,
-                avatar: "/placeholder.svg",
+                avatar: "/download (1).jpg",
               },
             ].map((testimonial, index) => (
               <Card
@@ -590,13 +578,11 @@ export default function Index() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">Y</span>
-                </div>
-                <span className="text-xl font-bold">YogaFlow</span>
+                <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
+                <span className="text-xl font-bold">Thuý An yoga</span>
               </div>
               <p className="text-gray-400 mb-4">
-                Platform yoga online hàng đầu Việt Nam, mang đến trải nghiệm tập
+                Thuý An yoga - Platform yoga online hàng đầu Việt Nam, mang đến trải nghiệm tập
                 luyện tuyệt vời nhất.
               </p>
               <div className="flex space-x-4">
@@ -677,7 +663,7 @@ export default function Index() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 YogaFlow. Tất cả quyền được bảo lưu.</p>
+            <p>&copy; 2024 Thuý An yoga. Tất cả quyền được bảo lưu.</p>
           </div>
         </div>
       </footer>

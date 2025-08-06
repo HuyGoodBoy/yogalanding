@@ -11,7 +11,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CourseDetail from "./pages/CourseDetail";
-import Instructors from "./pages/Instructors";
+
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Help from "./pages/Help";
@@ -32,7 +32,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/course/:courseId" element={<CourseDetail />} />
-          <Route path="/instructors" element={<Instructors />} />
+
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/help" element={<Help />} />

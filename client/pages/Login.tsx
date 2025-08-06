@@ -30,11 +30,9 @@ export default function Login() {
         <Card className="border-0 shadow-xl">
           <CardHeader className="text-center pb-6">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold">Y</span>
-              </div>
+              <img src="/logo.jpg" alt="Thuý An yoga" className="w-10 h-10 rounded-full object-cover" />
               <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                YogaFlow
+                Thuý An yoga
               </span>
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900">
@@ -105,7 +103,7 @@ export default function Login() {
             <div className="space-y-3">
               <Button variant="outline" className="w-full h-11">
                 <img
-                  src="/placeholder.svg"
+                  src="/images.jpg"
                   alt="Google"
                   className="w-5 h-5 mr-2"
                 />
@@ -113,7 +111,7 @@ export default function Login() {
               </Button>
               <Button variant="outline" className="w-full h-11">
                 <img
-                  src="/placeholder.svg"
+                  src="/download.jpg"
                   alt="Facebook"
                   className="w-5 h-5 mr-2"
                 />

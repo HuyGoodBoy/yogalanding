@@ -53,7 +53,7 @@ export default function About() {
       year: "2020",
       title: "Khởi đầu",
       description:
-        "YogaFlow được thành lập với sứ mệnh democratize yoga education tại Việt Nam.",
+        "Thuý An yoga được thành lập với sứ mệnh democratize yoga education tại Việt Nam.",
     },
     {
       year: "2021",
@@ -97,11 +97,9 @@ export default function About() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">Y</span>
-              </div>
+              <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                YogaFlow
+                Thuý An yoga
               </span>
             </Link>
             <Link
@@ -132,7 +130,7 @@ export default function About() {
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Chúng tôi tin rằng yoga không chỉ dành cho một nhóm người nào
-                đó. Sứ mệnh của YogaFlow là làm cho yoga trở nên dễ tiếp cận,
+                đó. Sứ mệnh của Thuý An yoga là làm cho yoga trở nên dễ tiếp cận,
                 chất lượng và phù hợp với mọi người Việt Nam.
               </p>
               <Button
@@ -144,7 +142,7 @@ export default function About() {
             </div>
             <div className="relative">
               <img
-                src="/placeholder.svg"
+                src="/images.jpg"
                 alt="Yoga community"
                 className="w-full h-96 object-cover rounded-3xl shadow-2xl"
               />
@@ -366,10 +364,8 @@ export default function About() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">Y</span>
-                </div>
-                <span className="text-xl font-bold">YogaFlow</span>
+                <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
+                <span className="text-xl font-bold">Thuý An yoga</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Yoga cho mọi người, mọi lúc, mọi nơi.
@@ -383,11 +379,7 @@ export default function About() {
                     Khóa học
                   </Link>
                 </li>
-                <li>
-                  <Link to="/instructors" className="hover:text-white">
-                    Giảng viên
-                  </Link>
-                </li>
+
                 <li>
                   <Link to="/live-classes" className="hover:text-white">
                     Live Classes
@@ -437,7 +429,7 @@ export default function About() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 YogaFlow. Tất cả quyền được bảo lưu.</p>
+            <p>&copy; 2024 Thuý An yoga. Tất cả quyền được bảo lưu.</p>
           </div>
         </div>
       </footer>
