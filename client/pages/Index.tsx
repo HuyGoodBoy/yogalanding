@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Star, Play, Users, Clock, Award, ChevronRight, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Index() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
