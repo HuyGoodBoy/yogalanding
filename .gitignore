@@ -13,11 +13,7 @@ dist-ssr
 *.local
 
 # Build files (but keep index.html for GitHub Pages)
-dist/
 dist-ssr/
-assets/
-*.js
-*.css
 *.map
 
 # Editor directories and files
