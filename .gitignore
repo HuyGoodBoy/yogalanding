@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Build files (but keep index.html for GitHub Pages)
+dist-ssr/
+*.map
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -25,26 +29,3 @@ dist-ssr
 
 .config/
 !.env
-
-# Source files (not needed in gh-pages branch)
-client/
-server/
-supabase/
-.github/
-public/
-*.ts
-*.tsx
-*.jsx
-*.json
-*.md
-*.bat
-*.sh
-vite.config.*
-tailwind.config.*
-tsconfig.*
-postcss.config.*
-components.json
-.prettierrc
-.npmrc
-.dockerignore
-AGENTS.md
