@@ -17,12 +17,41 @@ import {
   ChevronRight,
   Menu,
   X,
+  ShoppingCart,
+  Wallet,
+  BookOpen,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useCourses } from "@/hooks/use-courses";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import { useEnrollments } from "@/hooks/use-enrollments";
+import { toast } from "sonner";
 
 export default function Index() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { courses, loading: coursesLoading, error: coursesError } = useCourses();
+  const { user, signOut } = useAuth();
+  const { totalItems } = useCart();
+  const { isEnrolledInCourseBySlug } = useEnrollments();
+  const navigate = useNavigate();
+
+  const handleChoosePlan = (planName: string) => {
+    if (user) {
+      // Nếu đã đăng nhập, chuyển đến trang thanh toán subscription
+      navigate('/subscription-payment', { 
+        state: { 
+          plan: planName,
+          amount: planName === 'Cơ bản' ? 299000 : planName === 'Pro' ? 599000 : 999000
+        } 
+      });
+    } else {
+      // Nếu chưa đăng nhập, chuyển đến trang đăng ký
+      navigate('/register');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -58,19 +87,83 @@ export default function Index() {
               >
                 Giá cả
               </a>
-              <Button
-                variant="outline"
-                className="border-purple-200 text-purple-600 hover:bg-purple-50"
-                asChild
-              >
-                <Link to="/login">Đăng nhập</Link>
-              </Button>
-              <Button
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                asChild
-              >
-                <Link to="/register">Dùng thử miễn phí</Link>
-              </Button>
+              
+              {/* Cart Icon */}
+              <Link to="/cart" className="relative">
+                <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-purple-600 transition-colors" />
+                {totalItems > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500">
+                    {totalItems}
+                  </Badge>
+                )}
+              </Link>
+              
+              {/* Recharge Link */}
+              {user && (
+                <Link to="/recharge" className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors">
+                  <Wallet className="w-5 h-5" />
+                  <span className="hidden md:block">Nạp tiền</span>
+                </Link>
+              )}
+              
+              {/* User Menu Links */}
+              {user && (
+                <>
+                  <Link to="/my-courses" className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors">
+                    <BookOpen className="w-5 h-5" />
+                    <span className="hidden md:block">Khóa học của tôi</span>
+                  </Link>
+                  <Link to="/transaction-history" className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors">
+                    <Wallet className="w-5 h-5" />
+                    <span className="hidden md:block">Lịch sử giao dịch</span>
+                  </Link>
+                  <Link to="/admin" className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors">
+                    <Users className="w-5 h-5" />
+                    <span className="hidden md:block">Admin</span>
+                  </Link>
+                </>
+              )}
+              
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-gray-600">
+                    Xin chào, {user.email}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        await signOut();
+                        toast.success('Đăng xuất thành công!');
+                        navigate('/');
+                      } catch (error) {
+                        toast.error('Có lỗi xảy ra khi đăng xuất');
+                      }
+                    }}
+                    className="border-red-200 text-red-600 hover:bg-red-50"
+                  >
+                    <LogOut className="w-4 h-4 mr-1" />
+                    Đăng xuất
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                    asChild
+                  >
+                    <Link to="/login">Đăng nhập</Link>
+                  </Button>
+                  <Button
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    asChild
+                  >
+                    <Link to="/register">Dùng thử miễn phí</Link>
+                  </Button>
+                </>
+              )}
             </nav>
 
             {/* Mobile Menu Button */}
@@ -105,19 +198,58 @@ export default function Index() {
                 >
                   Giá cả
                 </a>
-                <Button
-                  variant="outline"
-                  className="border-purple-200 text-purple-600 hover:bg-purple-50"
-                  asChild
-                >
-                  <Link to="/login">Đăng nhập</Link>
-                </Button>
-                <Button
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                  asChild
-                >
-                  <Link to="/register">Dùng thử miễn phí</Link>
-                </Button>
+                
+                {/* Mobile Cart */}
+                <Link to="/cart" className="flex items-center text-gray-700 hover:text-purple-600 transition-colors">
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Giỏ hàng
+                  {totalItems > 0 && (
+                    <Badge className="ml-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500">
+                      {totalItems}
+                    </Badge>
+                  )}
+                </Link>
+                
+                {user ? (
+                  <div className="flex flex-col space-y-2">
+                    <span className="text-sm text-gray-600">
+                      Xin chào, {user.email}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          await signOut();
+                          toast.success('Đăng xuất thành công!');
+                          navigate('/');
+                        } catch (error) {
+                          toast.error('Có lỗi xảy ra khi đăng xuất');
+                        }
+                      }}
+                      className="border-red-200 text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut className="w-4 h-4 mr-1" />
+                      Đăng xuất
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                      asChild
+                    >
+                      <Link to="/login">Đăng nhập</Link>
+                    </Button>
+                    <Button
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                      asChild
+                    >
+                      <Link to="/register">Dùng thử miễn phí</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </nav>
           )}
@@ -224,93 +356,91 @@ export default function Index() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Yoga Cơ Bản",
-                description:
-                  "Khóa học dành cho người mới bắt đầu, học các tư thế cơ bản và hơi thở",
-                duration: "8 tuần",
-                students: "2,450",
-                price: "999,000₫",
-                level: "Cơ bản",
-                image: "/download.jpg",
-              },
-              {
-                title: "Hatha Yoga Nâng Cao",
-                description:
-                  "Nâng cao kỹ thuật và thực hành các tư thế phức tạp hơn",
-                duration: "12 tuần",
-                students: "1,820",
-                price: "1,499,000₫",
-                level: "Nâng cao",
-                image: "/download (1).jpg",
-              },
-              {
-                title: "Vinyasa Flow",
-                description:
-                  "Yoga động với các chuỗi tư thế linh hoạt, kết hợp âm nhạc",
-                duration: "10 tuần",
-                students: "3,150",
-                price: "1,299,000₫",
-                level: "Trung cấp",
-                image: "/download (2).jpg",
-              },
-            ].map((course, index) => (
-              <Card
-                key={index}
-                className="group hover:shadow-xl transition-all duration-300 border-gray-100 hover:-translate-y-2"
-              >
-                <CardHeader className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <Badge className="absolute top-4 left-4 bg-white/90 text-purple-700">
-                      {course.level}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <CardTitle className="text-xl mb-2 group-hover:text-purple-600 transition-colors">
-                    {course.title}
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 mb-4">
-                    {course.description}
-                  </CardDescription>
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <div className="flex items-center">
-                      <Clock size={16} className="mr-1" />
-                      {course.duration}
+          {coursesLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Đang tải khóa học...</p>
+            </div>
+          ) : coursesError ? (
+            <div className="text-center py-12">
+              <p className="text-red-600">Có lỗi xảy ra khi tải khóa học: {coursesError}</p>
+            </div>
+          ) : courses.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Không có khóa học nào được tìm thấy</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {courses.map((course) => (
+                <Card
+                  key={course.id}
+                  className="group hover:shadow-xl transition-all duration-300 border-gray-100 hover:-translate-y-2"
+                >
+                  <CardHeader className="p-0">
+                    <div className="relative overflow-hidden rounded-t-lg">
+                      <img
+                        src={course.thumbnail_url || "/download.jpg"}
+                        alt={course.title}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <Badge className="absolute top-4 left-4 bg-white/90 text-purple-700">
+                        {course.level}
+                      </Badge>
                     </div>
-                    <div className="flex items-center">
-                      <Users size={16} className="mr-1" />
-                      {course.students} học viên
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <CardTitle className="text-xl mb-2 group-hover:text-purple-600 transition-colors">
+                      {course.title}
+                    </CardTitle>
+                    <CardDescription className="text-gray-600 mb-4">
+                      {course.description}
+                    </CardDescription>
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <div className="flex items-center">
+                        <Clock size={16} className="mr-1" />
+                        {course.duration_weeks} tuần
+                      </div>
+                      <div className="flex items-center">
+                        <Users size={16} className="mr-1" />
+                        {course.instructor}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-purple-600">
-                      {course.price}
-                    </span>
-                    <div className="flex items-center text-yellow-500">
-                      <Star size={16} fill="currentColor" />
-                      <span className="ml-1 text-gray-600">4.9</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-purple-600">
+                        {course.price_vnd.toLocaleString('vi-VN')}₫
+                      </span>
+                      <div className="flex items-center text-yellow-500">
+                        <Star size={16} fill="currentColor" />
+                        <span className="ml-1 text-gray-600">4.9</span>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="p-6 pt-0">
-                  <Button
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                    asChild
-                  >
-                    <Link to={`/course/${index + 1}`}>Đăng ký ngay</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                  <CardFooter className="p-6 pt-0">
+                    {isEnrolledInCourseBySlug(course.slug) ? (
+                      <div className="w-full">
+                        <Badge className="w-full justify-center bg-green-100 text-green-700 border-green-200">
+                          Đã sở hữu
+                        </Badge>
+                        <Button
+                          className="w-full mt-2 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          asChild
+                        >
+                          <Link to={`/course/${course.slug}`}>Xem khóa học</Link>
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                        asChild
+                      >
+                        <Link to={`/course/${course.slug}`}>Đăng ký ngay</Link>
+                      </Button>
+                    )}
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -380,7 +510,7 @@ export default function Index() {
                 content:
                   "Tôi đã thực hành yoga được 6 tháng và cảm thấy cơ thể linh hoạt hơn rất nhiều. Các bài học rất dễ hiểu và thầy cô rất tận tâm.",
                 rating: 5,
-                avatar: "/images (1).jpg",
+                avatar: "/human1.jpg",
               },
               {
                 name: "Trần Văn Nam",
@@ -388,7 +518,7 @@ export default function Index() {
                 content:
                   "Công việc căng thẳng nhưng từ khi học yoga online tại đây, tôi cảm thấy tinh thần thư thái và tập trung hơn. Rất đáng đầu tư!",
                 rating: 5,
-                avatar: "/download.jpg",
+                avatar: "/human3.webp",
               },
               {
                 name: "Lê Thị Hương",
@@ -396,7 +526,7 @@ export default function Index() {
                 content:
                   "Khóa học Vinyasa Flow thật tuyệt vời! Tôi có thể học theo tốc độ của mình và các video rất chất lượng. Highly recommended!",
                 rating: 5,
-                avatar: "/download (1).jpg",
+                avatar: "/human2.jpeg",
               },
             ].map((testimonial, index) => (
               <Card
@@ -531,9 +661,9 @@ export default function Index() {
                         ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                         : "bg-gray-900 hover:bg-gray-800"
                     }`}
-                    asChild
+                    onClick={() => handleChoosePlan(plan.name)}
                   >
-                    <Link to="/register">Chọn gói này</Link>
+                    Chọn gói này
                   </Button>
                 </CardFooter>
               </Card>
@@ -595,23 +725,18 @@ export default function Index() {
               <h3 className="font-semibold mb-4">Khóa học</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <Link to="/course/1" className="hover:text-white">
+                  <Link to="/course/yoga-co-ban" className="hover:text-white">
                     Yoga cơ bản
                   </Link>
                 </li>
                 <li>
-                  <Link to="/course/2" className="hover:text-white">
+                  <Link to="/course/hatha-yoga-nang-cao" className="hover:text-white">
                     Hatha Yoga
                   </Link>
                 </li>
                 <li>
-                  <Link to="/course/3" className="hover:text-white">
+                  <Link to="/course/vinyasa-flow" className="hover:text-white">
                     Vinyasa Flow
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/course/4" className="hover:text-white">
-                    Yin Yoga
                   </Link>
                 </li>
               </ul>

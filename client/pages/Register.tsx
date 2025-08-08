@@ -1,238 +1,185 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Eye, EyeOff, ArrowLeft, Check } from "lucide-react";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Register() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    // Validate password confirmation
+    if (formData.password !== formData.confirmPassword) {
+      setError("Mật khẩu xác nhận không khớp");
+      setLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    if (formData.password.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await signUp(formData.email, formData.password, formData.fullName);
+      setSuccess("Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Đăng ký thất bại";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Link
-          to="/"
-          className="flex items-center text-purple-600 hover:text-purple-700 mb-6"
-        >
-          <ArrowLeft className="mr-2" size={20} />
-          Quay về trang chủ
-        </Link>
-
-        <Card className="border-0 shadow-xl">
-          <CardHeader className="text-center pb-6">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <img src="/logo.jpg" alt="Thuý An yoga" className="w-10 h-10 rounded-full object-cover" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Thuý An yoga
-              </span>
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <img src="/logo.jpg" alt="Thuý An yoga" className="w-12 h-12 rounded-full object-cover" />
+          </div>
+          <CardTitle className="text-2xl font-bold">Đăng ký tài khoản</CardTitle>
+          <CardDescription>
+            Tạo tài khoản để bắt đầu hành trình yoga của bạn
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Họ và tên</Label>
+              <Input
+                id="fullName"
+                name="fullName"
+                type="text"
+                placeholder="Nhập họ và tên"
+                value={formData.fullName}
+                onChange={handleChange}
+                required
+              />
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900">
-              Tạo tài khoản
-            </CardTitle>
-            <CardDescription>
-              Bắt đầu hành trình yoga của bạn ngay hôm nay
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-6">
-            <form className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">Họ</Label>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    placeholder="Họ"
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Tên</Label>
-                  <Input
-                    id="lastName"
-                    type="text"
-                    placeholder="Tên"
-                    className="h-11"
-                  />
-                </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Nhập email của bạn"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password">Mật khẩu</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="Nhập lại mật khẩu"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-red-600 text-sm">{error}</p>
               </div>
+            )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  className="h-11"
-                />
+            {success && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                <p className="text-green-600 text-sm">{success}</p>
               </div>
+            )}
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Số điện thoại</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="0901 234 567"
-                  className="h-11"
-                />
-              </div>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              disabled={loading}
+            >
+              {loading ? "Đang đăng ký..." : "Đăng ký"}
+            </Button>
+          </form>
 
-              <div className="space-y-2">
-                <Label htmlFor="experience">Kinh nghiệm yoga</Label>
-                <Select>
-                  <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Chọn trình độ của bạn" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="beginner">Người mới bắt đầu</SelectItem>
-                    <SelectItem value="intermediate">Trung cấp</SelectItem>
-                    <SelectItem value="advanced">Nâng cao</SelectItem>
-                    <SelectItem value="expert">Chuyên nghiệp</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Mật khẩu</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Tối thiểu 8 ký tự"
-                    className="h-11 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Nhập lại mật khẩu"
-                    className="h-11 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff size={20} />
-                    ) : (
-                      <Eye size={20} />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <label className="flex items-start space-x-3 text-sm">
-                  <div className="relative">
-                    <input type="checkbox" className="peer sr-only" />
-                    <div className="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-purple-600 peer-checked:border-purple-600 flex items-center justify-center">
-                      <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100" />
-                    </div>
-                  </div>
-                  <span className="text-gray-600 leading-5">
-                    Tôi đồng ý với{" "}
-                    <Link
-                      to="/terms"
-                      className="text-purple-600 hover:text-purple-700"
-                    >
-                      Điều khoản sử dụng
-                    </Link>{" "}
-                    và{" "}
-                    <Link
-                      to="/privacy"
-                      className="text-purple-600 hover:text-purple-700"
-                    >
-                      Chính sách bảo mật
-                    </Link>
-                  </span>
-                </label>
-
-                <label className="flex items-start space-x-3 text-sm">
-                  <div className="relative">
-                    <input type="checkbox" className="peer sr-only" />
-                    <div className="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-purple-600 peer-checked:border-purple-600 flex items-center justify-center">
-                      <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100" />
-                    </div>
-                  </div>
-                  <span className="text-gray-600 leading-5">
-                    Nhận thông tin về khóa học mới và ưu đãi đặc biệt
-                  </span>
-                </label>
-              </div>
-
-              <Button className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                Tạo tài khoản
-              </Button>
-            </form>
-
+          <div className="mt-6">
             <div className="relative">
-              <Separator />
-              <span className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-sm text-gray-500">
-                hoặc
-              </span>
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">Hoặc đăng ký với</span>
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <Button variant="outline" className="w-full h-11">
-                <img
-                  src="/images.jpg"
-                  alt="Google"
-                  className="w-5 h-5 mr-2"
-                />
-                Đăng ký với Google
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <Button variant="outline" className="border-gray-300 hover:bg-gray-50">
+                <FaGoogle className="mr-2 text-red-500" />
+                Google
               </Button>
-              <Button variant="outline" className="w-full h-11">
-                <img
-                  src="/download.jpg"
-                  alt="Facebook"
-                  className="w-5 h-5 mr-2"
-                />
-                Đăng ký với Facebook
+              <Button variant="outline" className="border-gray-300 hover:bg-gray-50">
+                <FaFacebook className="mr-2 text-blue-500" />
+                Facebook
               </Button>
             </div>
+          </div>
 
-            <div className="text-center text-sm text-gray-600">
-              Đã có tài khoản?{" "}
-              <Link
-                to="/login"
-                className="text-purple-600 hover:text-purple-700 font-medium"
-              >
-                Đăng nhập ngay
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="mt-6 text-center text-sm">
+            <span className="text-gray-600">Đã có tài khoản? </span>
+            <Link to="/login" className="text-purple-600 hover:text-purple-700 font-medium">
+              Đăng nhập ngay
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

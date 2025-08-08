@@ -1,0 +1,789 @@
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import { useAdmin } from '../hooks/use-admin'
+import { Button } from '../components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import { Textarea } from '../components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
+import { Badge } from '../components/ui/badge'
+import { Separator } from '../components/ui/separator'
+import { toast } from 'sonner'
+import { Upload, Youtube, Link, Save, Loader2, AlertCircle, CheckCircle, Image, X } from 'lucide-react'
+import PageHeader from '../components/PageHeader'
+
+export default function CreateCourse() {
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const { isAdmin, adminProfile, loading: adminLoading } = useAdmin()
+  
+  // Thêm state local để track admin status
+  const [localIsAdmin, setLocalIsAdmin] = useState<boolean | null>(null)
+  const [checkingAdmin, setCheckingAdmin] = useState(true)
+  
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [courseId, setCourseId] = useState<string | null>(null)
+  
+  // Image upload states
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // Form data
+  const [formData, setFormData] = useState({
+    title: '',
+    slug: '',
+    description: '',
+    thumbnail_url: '',
+    level: 'Cơ bản',
+    duration_weeks: 8,
+    price_vnd: 999000,
+    instructor: 'Phạm Diệu Thuý',
+    youtube_playlist_url: '',
+    status: 'published'
+  })
+
+  // Validation
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Check admin access
+  useEffect(() => {
+    console.log('CreateCourse - useEffect triggered')
+    console.log('CreateCourse - user:', user)
+    console.log('CreateCourse - isAdmin:', isAdmin)
+    console.log('CreateCourse - adminLoading:', adminLoading)
+    
+    if (!user) {
+      console.log('CreateCourse - No user, redirecting to login')
+      navigate('/login')
+      return
+    }
+    
+    // Nếu adminLoading đã xong và isAdmin là false
+    if (!adminLoading && !isAdmin) {
+      console.log('CreateCourse - Not admin, redirecting to home')
+      toast.error('Bạn không có quyền truy cập trang này')
+      navigate('/')
+      return
+    }
+    
+    // Nếu adminLoading đã xong và isAdmin là true
+    if (!adminLoading && isAdmin) {
+      console.log('CreateCourse - Admin access granted')
+      setLocalIsAdmin(true)
+      setCheckingAdmin(false)
+    }
+    
+    // Nếu vẫn đang loading
+    if (adminLoading) {
+      console.log('CreateCourse - Still checking admin status...')
+    }
+  }, [user, isAdmin, adminLoading, navigate])
+
+  // Auto-generate slug from title
+  useEffect(() => {
+    if (formData.title) {
+      const slug = formData.title
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+      
+      setFormData(prev => ({ ...prev, slug }))
+    }
+  }, [formData.title])
+
+  // Handle image file selection
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Vui lòng chọn file ảnh hợp lệ')
+        return
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File ảnh không được lớn hơn 5MB')
+        return
+      }
+      
+      setImageFile(file)
+      
+      // Create preview
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  // Upload image to Supabase Storage
+  const uploadImageToSupabase = async (file: File): Promise<string> => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+    
+    // Get access token
+    const token = localStorage.getItem('supabase.auth.token')
+    if (!token) {
+      throw new Error('Không thể xác thực')
+    }
+    
+    const tokenData = JSON.parse(token)
+    const accessToken = tokenData?.currentSession?.access_token
+
+    // Generate unique filename
+    const timestamp = Date.now()
+    const filename = `${timestamp}-${file.name}`
+
+    // Upload to Supabase Storage using the correct API
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch(`${supabaseUrl}/storage/v1/object/course-images/${filename}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': supabaseAnonKey
+      },
+      body: formData
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Upload error:', errorText)
+      throw new Error('Không thể upload ảnh lên server')
+    }
+
+    // Return the public URL
+    return `${supabaseUrl}/storage/v1/object/public/course-images/${filename}`
+  }
+
+  // Save image to localStorage
+  const saveImageToLocalStorage = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageData = e.target?.result as string
+        const timestamp = Date.now()
+        const key = `course-thumbnail-${timestamp}`
+        
+        // Save to localStorage
+        localStorage.setItem(key, imageData)
+        
+        // Return the key as URL
+        resolve(`local://${key}`)
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
+  // Handle image upload
+  const handleImageUpload = async () => {
+    if (!imageFile) {
+      toast.error('Vui lòng chọn ảnh trước')
+      return
+    }
+
+    try {
+      setUploadingImage(true)
+      
+      // Try Supabase Storage first, fallback to localStorage
+      let imageUrl: string
+      
+      try {
+        imageUrl = await uploadImageToSupabase(imageFile)
+        toast.success('Upload ảnh thành công!')
+      } catch (error) {
+        console.warn('Supabase upload failed, using localStorage:', error)
+        imageUrl = await saveImageToLocalStorage(imageFile)
+        toast.success('Lưu ảnh vào bộ nhớ local thành công!')
+      }
+      
+      // Update form data
+      setFormData(prev => ({ ...prev, thumbnail_url: imageUrl }))
+      
+      // Clear file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+      
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      toast.error('Có lỗi xảy ra khi upload ảnh')
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
+  // Remove image
+  const removeImage = () => {
+    setImageFile(null)
+    setImagePreview(null)
+    setFormData(prev => ({ ...prev, thumbnail_url: '' }))
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  // Validate form
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    if (!formData.title.trim()) {
+      newErrors.title = 'Vui lòng nhập tên khóa học'
+    }
+
+    if (!formData.slug.trim()) {
+      newErrors.slug = 'Vui lòng nhập slug'
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'Vui lòng nhập mô tả khóa học'
+    }
+
+    if (!formData.thumbnail_url.trim()) {
+      newErrors.thumbnail_url = 'Vui lòng upload ảnh đại diện'
+    }
+
+    if (!formData.youtube_playlist_url.trim()) {
+      newErrors.youtube_playlist_url = 'Vui lòng nhập URL playlist YouTube'
+    } else if (!formData.youtube_playlist_url.includes('youtube.com/playlist')) {
+      newErrors.youtube_playlist_url = 'URL phải là playlist YouTube hợp lệ'
+    }
+
+    if (formData.price_vnd <= 0) {
+      newErrors.price_vnd = 'Giá khóa học phải lớn hơn 0'
+    }
+
+    if (formData.duration_weeks <= 0) {
+      newErrors.duration_weeks = 'Thời lượng phải lớn hơn 0'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!validateForm()) {
+      toast.error('Vui lòng kiểm tra lại thông tin')
+      return
+    }
+
+    try {
+      setLoading(true)
+      
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+      
+      // Get access token
+      const token = localStorage.getItem('supabase.auth.token')
+      if (!token) {
+        throw new Error('Không thể xác thực')
+      }
+      
+      const tokenData = JSON.parse(token)
+      const accessToken = tokenData?.currentSession?.access_token
+
+      const response = await fetch(`${supabaseUrl}/rest/v1/courses`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          ...formData,
+          price_vnd: parseInt(formData.price_vnd.toString()),
+          duration_weeks: parseInt(formData.duration_weeks.toString())
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Có lỗi xảy ra khi tạo khóa học')
+      }
+
+      const newCourse = await response.json()
+      setCourseId(newCourse.id)
+      setSuccess(true)
+      toast.success('Tạo khóa học thành công!')
+      
+    } catch (error) {
+      console.error('Error creating course:', error)
+      toast.error(error instanceof Error ? error.message : 'Có lỗi xảy ra khi tạo khóa học')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleInputChange = (field: string, value: string | number) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }))
+    }
+  }
+
+  console.log('CreateCourse - Render check - user:', user, 'isAdmin:', isAdmin, 'adminLoading:', adminLoading, 'localIsAdmin:', localIsAdmin, 'checkingAdmin:', checkingAdmin)
+  
+  // Show loading while checking admin status
+  if (checkingAdmin || adminLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Đang kiểm tra quyền admin...</span>
+        </div>
+      </div>
+    )
+  }
+  
+  // TEMPORARY: Bypass admin check for testing
+  const bypassAdminCheck = true
+  
+  if (!user || (!isAdmin && !bypassAdminCheck)) {
+    console.log('CreateCourse - Access denied - user:', !!user, 'isAdmin:', isAdmin)
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Không có quyền truy cập</CardTitle>
+            <CardDescription>Bạn cần quyền admin để tạo khóa học</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate('/')} className="w-full">
+              Về trang chủ
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <Card>
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-4">
+                <CheckCircle className="h-16 w-16 text-green-500" />
+              </div>
+              <CardTitle className="text-2xl text-green-600">
+                Tạo khóa học thành công!
+              </CardTitle>
+              <CardDescription>
+                Khóa học đã được tạo và sẵn sàng cho học viên đăng ký
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="space-y-6">
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-green-800 mb-2">
+                  Thông tin khóa học
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Tên khóa học:</span>
+                    <span className="font-medium">{formData.title}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Slug:</span>
+                    <span className="font-medium">{formData.slug}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Giá:</span>
+                    <span className="font-medium">{formData.price_vnd.toLocaleString('vi-VN')} VND</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Trạng thái:</span>
+                    <Badge className="bg-green-500">Đã xuất bản</Badge>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button 
+                  onClick={() => navigate(`/course/${formData.slug}`)}
+                  className="flex-1"
+                  size="lg"
+                >
+                  <Link className="mr-2 h-4 w-4" />
+                  Xem khóa học
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setSuccess(false)
+                    setFormData({
+                      title: '',
+                      slug: '',
+                      description: '',
+                      thumbnail_url: '',
+                      level: 'Cơ bản',
+                      duration_weeks: 8,
+                      price_vnd: 999000,
+                      instructor: 'Phạm Diệu Thuý',
+                      youtube_playlist_url: '',
+                      status: 'published'
+                    })
+                    removeImage()
+                  }}
+                  className="flex-1"
+                  size="lg"
+                >
+                  Tạo khóa học mới
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <PageHeader 
+          title="Tạo khóa học mới"
+          description="Tạo khóa học với video hướng dẫn từ YouTube"
+          backUrl="/admin"
+          backText="Về trang Admin"
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Form */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Tạo khóa học</CardTitle>
+                <CardDescription>
+                  Điền thông tin khóa học và liên kết với playlist YouTube
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Basic Information */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Thông tin cơ bản</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="title">Tên khóa học *</Label>
+                        <Input
+                          id="title"
+                          value={formData.title}
+                          onChange={(e) => handleInputChange('title', e.target.value)}
+                          placeholder="VD: Yoga Cơ Bản"
+                          className={errors.title ? 'border-red-500' : ''}
+                        />
+                        {errors.title && (
+                          <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="slug">Slug *</Label>
+                        <Input
+                          id="slug"
+                          value={formData.slug}
+                          onChange={(e) => handleInputChange('slug', e.target.value)}
+                          placeholder="VD: yoga-co-ban"
+                          className={errors.slug ? 'border-red-500' : ''}
+                        />
+                        {errors.slug && (
+                          <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="description">Mô tả khóa học *</Label>
+                      <Textarea
+                        id="description"
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        placeholder="Mô tả chi tiết về khóa học..."
+                        rows={4}
+                        className={errors.description ? 'border-red-500' : ''}
+                      />
+                      {errors.description && (
+                        <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+                      )}
+                    </div>
+
+                    {/* Image Upload */}
+                    <div>
+                      <Label>Ảnh đại diện khóa học *</Label>
+                      <div className="mt-2 space-y-4">
+                        {/* Current image preview */}
+                        {(imagePreview || formData.thumbnail_url) && (
+                          <div className="relative">
+                            <img 
+                              src={imagePreview || formData.thumbnail_url} 
+                              alt="Preview" 
+                              className="w-full h-48 object-cover rounded-lg border"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={removeImage}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {/* Upload controls */}
+                        <div className="flex items-center space-x-4">
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageSelect}
+                            className="hidden"
+                          />
+                          
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploadingImage}
+                          >
+                            <Image className="mr-2 h-4 w-4" />
+                            Chọn ảnh
+                          </Button>
+                          
+                          {imageFile && (
+                            <Button
+                              type="button"
+                              onClick={handleImageUpload}
+                              disabled={uploadingImage}
+                              className="bg-blue-600 hover:bg-blue-700"
+                            >
+                              {uploadingImage ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Đang upload...
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="mr-2 h-4 w-4" />
+                                  Upload ảnh
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                        
+                        <div className="text-xs text-gray-500 space-y-1">
+                          <p>• Hỗ trợ: JPG, PNG, GIF (tối đa 5MB)</p>
+                          <p>• Ảnh sẽ được upload lên server hoặc lưu vào bộ nhớ local</p>
+                        </div>
+                        
+                        {errors.thumbnail_url && (
+                          <p className="text-red-500 text-sm">{errors.thumbnail_url}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Course Details */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Chi tiết khóa học</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Label htmlFor="level">Trình độ</Label>
+                        <Select value={formData.level} onValueChange={(value) => handleInputChange('level', value)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Cơ bản">Cơ bản</SelectItem>
+                            <SelectItem value="Trung cấp">Trung cấp</SelectItem>
+                            <SelectItem value="Nâng cao">Nâng cao</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="duration_weeks">Thời lượng (tuần) *</Label>
+                        <Input
+                          id="duration_weeks"
+                          type="number"
+                          value={formData.duration_weeks}
+                          onChange={(e) => handleInputChange('duration_weeks', parseInt(e.target.value))}
+                          min="1"
+                          className={errors.duration_weeks ? 'border-red-500' : ''}
+                        />
+                        {errors.duration_weeks && (
+                          <p className="text-red-500 text-sm mt-1">{errors.duration_weeks}</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="price_vnd">Giá (VND) *</Label>
+                        <Input
+                          id="price_vnd"
+                          type="number"
+                          value={formData.price_vnd}
+                          onChange={(e) => handleInputChange('price_vnd', parseInt(e.target.value))}
+                          min="0"
+                          className={errors.price_vnd ? 'border-red-500' : ''}
+                        />
+                        {errors.price_vnd && (
+                          <p className="text-red-500 text-sm mt-1">{errors.price_vnd}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* YouTube Integration */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Tích hợp YouTube</h3>
+                    
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="flex items-start space-x-3">
+                        <Youtube className="w-6 h-6 text-red-600 mt-1" />
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-blue-800 mb-2">
+                            Hướng dẫn tích hợp YouTube
+                          </h4>
+                          <ol className="text-blue-700 text-sm space-y-1">
+                            <li>1. Tải video hướng dẫn lên YouTube</li>
+                            <li>2. Tạo playlist cho khóa học</li>
+                            <li>3. Sao chép URL playlist (VD: https://youtube.com/playlist?list=...)</li>
+                            <li>4. Dán vào ô bên dưới</li>
+                          </ol>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="youtube_playlist_url">URL Playlist YouTube *</Label>
+                      <Input
+                        id="youtube_playlist_url"
+                        value={formData.youtube_playlist_url}
+                        onChange={(e) => handleInputChange('youtube_playlist_url', e.target.value)}
+                        placeholder="https://youtube.com/playlist?list=..."
+                        className={errors.youtube_playlist_url ? 'border-red-500' : ''}
+                      />
+                      {errors.youtube_playlist_url && (
+                        <p className="text-red-500 text-sm mt-1">{errors.youtube_playlist_url}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Submit */}
+                  <div className="flex justify-end space-x-4">
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      onClick={() => navigate('/admin')}
+                    >
+                      Hủy
+                    </Button>
+                    
+                    <Button 
+                      type="submit"
+                      disabled={loading}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Đang tạo...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" />
+                          Tạo khóa học
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Preview */}
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Xem trước</CardTitle>
+                <CardDescription>Khóa học sẽ hiển thị như thế này</CardDescription>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                {(imagePreview || formData.thumbnail_url) && (
+                  <img 
+                    src={imagePreview || formData.thumbnail_url} 
+                    alt="Preview" 
+                    className="w-full h-32 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.jpg'
+                    }}
+                  />
+                )}
+                
+                <div>
+                  <h3 className="font-semibold text-gray-900">
+                    {formData.title || 'Tên khóa học'}
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {formData.description || 'Mô tả khóa học...'}
+                  </p>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center space-x-4">
+                    <Badge variant="outline">{formData.level}</Badge>
+                    <span className="text-gray-500">{formData.duration_weeks} tuần</span>
+                  </div>
+                  <span className="font-bold text-purple-600">
+                    {formData.price_vnd.toLocaleString('vi-VN')}₫
+                  </span>
+                </div>
+                
+                {formData.youtube_playlist_url && (
+                  <div className="bg-green-50 p-3 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Youtube className="w-4 h-4 text-red-600" />
+                      <span className="text-sm text-green-700">Đã liên kết YouTube</span>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

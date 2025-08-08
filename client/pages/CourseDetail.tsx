@@ -22,71 +22,130 @@ import {
   CheckCircle,
   Globe,
   Download,
+  ShoppingCart,
+  Check,
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useCourses, Course } from "@/hooks/use-courses";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import { useOrders } from "@/hooks/use-orders";
+import { useEnrollments } from "@/hooks/use-enrollments";
+import { toast } from "sonner";
 
 export default function CourseDetail() {
-  const { courseId } = useParams();
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { addToCart, isInCart, removeFromCart } = useCart();
+  const { createOrder, loading: orderLoading } = useOrders();
+  const { getCourseBySlug } = useCourses();
+  const { isEnrolledInCourseBySlug } = useEnrollments();
+  
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
 
-  // Mock course data - in real app this would come from API
-  const course = {
-    id: courseId || "1",
-    title: "Yoga Cơ Bản",
-    subtitle: "Khóa học dành cho người mới bắt đầu",
-    description:
-      "Khóa học yoga cơ bản được thiết kế đặc biệt cho những người mới bắt đầu hành trình yoga. Bạn sẽ học được các tư thế cơ bản, kỹ thuật hô hấp, và cách thư giãn đúng cách.",
-    instructor: "Nguyễn Thị Linh",
-    instructorBio:
-      "Giảng viên yoga với 8 năm kinh nghiệm, chứng chỉ quốc tế RYT-500",
-    price: "999,000₫",
-    originalPrice: "1,299,000₫",
-    duration: "8 tuần",
-    lessons: 24,
-    students: "2,450",
-    rating: 4.9,
-    reviews: 312,
-    level: "Cơ bản",
-    language: "Tiếng Việt",
-    certificate: true,
-    image: "/download.jpg",
-    features: [
-      "24 video bài học chất lượng HD",
-      "Tài liệu PDF hướng dẫn chi tiết",
-      "Hỗ trợ trực tuyến từ giảng viên",
-      "Chứng chỉ hoàn thành khóa học",
-      "Truy cập suốt đời",
-      "Cộng đồng học viên riêng",
-    ],
-    curriculum: [
-      {
-        week: 1,
-        title: "Tuần 1: Làm quen với Yoga",
-        lessons: [
-          "Giới thiệu về Yoga và lợi ích",
-          "Chuẩn bị không gian tập luyện",
-          "Các tư thế cơ bản đầu tiên",
-        ],
-      },
-      {
-        week: 2,
-        title: "Tuần 2: Hô hấp và Thư giãn",
-        lessons: [
-          "Kỹ thuật hô hấp Pranayama",
-          "Tư thế thiền cơ bản",
-          "Thư giãn toàn thân",
-        ],
-      },
-      {
-        week: 3,
-        title: "Tuần 3: Tư thế đứng",
-        lessons: [
-          "Mountain Pose và Tree Pose",
-          "Warrior I và Warrior II",
-          "Triangle Pose",
-        ],
-      },
-    ],
+  useEffect(() => {
+    if (slug) {
+      fetchCourse();
+    }
+  }, [slug]);
+
+  const fetchCourse = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const courseData = await getCourseBySlug(slug!);
+      if (courseData) {
+        setCourse(courseData);
+      } else {
+        setError("Không tìm thấy khóa học");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Có lỗi xảy ra");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleAddToCart = () => {
+    if (!course) return;
+    
+    addToCart({
+      id: course.id,
+      slug: course.slug,
+      title: course.title,
+      price_vnd: course.price_vnd,
+      thumbnail_url: course.thumbnail_url,
+      level: course.level
+    });
+    
+    toast.success("Đã thêm vào giỏ hàng!");
+  };
+
+  const handleRemoveFromCart = () => {
+    if (!course) return;
+    
+    removeFromCart(course.id);
+    toast.success("Đã xóa khỏi giỏ hàng!");
+  };
+
+  const handlePurchaseNow = async () => {
+    if (!course || !user) {
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+      return;
+    }
+
+    try {
+      setPurchaseLoading(true);
+      
+      const order = await createOrder([course.id], course.price_vnd);
+      
+      // Chuyển hướng đến trang thanh toán ngay lập tức
+      toast.success("Đơn hàng đã được tạo! Chuyển hướng đến trang thanh toán...");
+      navigate(`/payment/${order.order_id}`);
+      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Có lỗi xảy ra khi mua khóa học";
+      toast.error(errorMessage);
+    } finally {
+      setPurchaseLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Đang tải khóa học...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !course) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Không tìm thấy khóa học</h2>
+          <p className="text-gray-600 mb-6">{error || "Khóa học không tồn tại"}</p>
+          <Button asChild>
+            <Link to="/">Quay về trang chủ</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const isInCartItem = isInCart(course.id);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -121,8 +180,7 @@ export default function CourseDetail() {
                 <Badge className="bg-purple-100 text-purple-700">
                   {course.level}
                 </Badge>
-                <Badge variant="outline">{course.language}</Badge>
-                {course.certificate && (
+                <Badge variant="outline">Tiếng Việt</Badge>
                   <Badge
                     variant="outline"
                     className="border-green-200 text-green-700"
@@ -130,40 +188,39 @@ export default function CourseDetail() {
                     <Award className="w-3 h-3 mr-1" />
                     Có chứng chỉ
                   </Badge>
-                )}
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
                 {course.title}
               </h1>
-              <p className="text-xl text-gray-600 mb-4">{course.subtitle}</p>
+              <p className="text-xl text-gray-600 mb-4">{course.description}</p>
 
               <div className="flex items-center space-x-6 text-sm text-gray-600 mb-6">
                 <div className="flex items-center">
                   <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
-                  <span className="font-medium">{course.rating}</span>
-                  <span className="ml-1">({course.reviews} đánh giá)</span>
+                  <span className="font-medium">4.9</span>
+                  <span className="ml-1">(312 đánh giá)</span>
                 </div>
                 <div className="flex items-center">
                   <Users className="w-4 h-4 mr-1" />
-                  {course.students} học viên
+                  2,450 học viên
                 </div>
                 <div className="flex items-center">
                   <Clock className="w-4 h-4 mr-1" />
-                  {course.duration}
+                  {course.duration_weeks} tuần
                 </div>
               </div>
 
               <div className="flex items-center space-x-4 mb-6">
-                                      <Avatar className="w-12 h-12">
-                        <AvatarImage src="/images (1).jpg" />
-                        <AvatarFallback>NL</AvatarFallback>
-                      </Avatar>
+                <Avatar className="w-12 h-12">
+                  <AvatarImage src="/images (1).jpg" />
+                  <AvatarFallback>PDT</AvatarFallback>
+                </Avatar>
                 <div>
                   <p className="font-medium text-gray-900">
                     {course.instructor}
                   </p>
                   <p className="text-sm text-gray-600">
-                    {course.instructorBio}
+                    Giảng viên yoga với 8 năm kinh nghiệm, chứng chỉ quốc tế RYT-500
                   </p>
                 </div>
               </div>
@@ -172,7 +229,7 @@ export default function CourseDetail() {
             {/* Course Video */}
             <div className="relative">
               <img
-                src={course.image}
+                src={course.thumbnail_url || "/download.jpg"}
                 alt={course.title}
                 className="w-full h-64 md:h-80 object-cover rounded-lg"
               />
@@ -211,7 +268,14 @@ export default function CourseDetail() {
                         Bạn sẽ học được gì:
                       </h4>
                       <div className="grid md:grid-cols-2 gap-2">
-                        {course.features.map((feature, index) => (
+                        {[
+                          "24 video bài học chất lượng HD",
+                          "Tài liệu PDF hướng dẫn chi tiết",
+                          "Hỗ trợ trực tuyến từ giảng viên",
+                          "Chứng chỉ hoàn thành khóa học",
+                          "Truy cập suốt đời",
+                          "Cộng đồng học viên riêng",
+                        ].map((feature, index) => (
                           <div key={index} className="flex items-center">
                             <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
                             <span className="text-gray-700">{feature}</span>
@@ -228,12 +292,40 @@ export default function CourseDetail() {
                   <CardHeader>
                     <CardTitle>Chương trình học</CardTitle>
                     <CardDescription>
-                      {course.lessons} bài học • {course.duration}
+                      24 bài học • {course.duration_weeks} tuần
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {course.curriculum.map((week, index) => (
+                      {[
+                        {
+                          week: 1,
+                          title: "Tuần 1: Làm quen với Yoga",
+                          lessons: [
+                            "Giới thiệu về Yoga và lợi ích",
+                            "Chuẩn bị không gian tập luyện",
+                            "Các tư thế cơ bản đầu tiên",
+                          ],
+                        },
+                        {
+                          week: 2,
+                          title: "Tuần 2: Hô hấp và Thư giãn",
+                          lessons: [
+                            "Kỹ thuật hô hấp Pranayama",
+                            "Tư thế thiền cơ bản",
+                            "Thư giãn toàn thân",
+                          ],
+                        },
+                        {
+                          week: 3,
+                          title: "Tuần 3: Tư thế đứng",
+                          lessons: [
+                            "Mountain Pose và Tree Pose",
+                            "Warrior I và Warrior II",
+                            "Triangle Pose",
+                          ],
+                        },
+                      ].map((week, index) => (
                         <div key={index} className="border rounded-lg p-4">
                           <h4 className="font-semibold text-gray-900 mb-2">
                             {week.title}
@@ -265,14 +357,14 @@ export default function CourseDetail() {
                     <div className="flex items-start space-x-4">
                       <Avatar className="w-20 h-20">
                         <AvatarImage src="/download.jpg" />
-                        <AvatarFallback>NL</AvatarFallback>
+                        <AvatarFallback>PDT</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <h3 className="text-xl font-semibold text-gray-900 mb-2">
                           {course.instructor}
                         </h3>
                         <p className="text-gray-600 mb-4">
-                          {course.instructorBio}
+                          Giảng viên yoga với 8 năm kinh nghiệm, chứng chỉ quốc tế RYT-500
                         </p>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
@@ -303,14 +395,14 @@ export default function CourseDetail() {
                   <CardHeader>
                     <CardTitle>Đánh giá từ học viên</CardTitle>
                     <CardDescription>
-                      {course.rating}/5 • {course.reviews} đánh giá
+                      4.9/5 • 312 đánh giá
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
                       <div className="flex items-center space-x-4">
                         <div className="text-4xl font-bold text-gray-900">
-                          {course.rating}
+                          4.9
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center mb-2">
@@ -389,22 +481,61 @@ export default function CourseDetail() {
                 <div className="text-center mb-6">
                   <div className="flex items-baseline justify-center space-x-2 mb-2">
                     <span className="text-3xl font-bold text-purple-600">
-                      {course.price}
+                      {course.price_vnd.toLocaleString('vi-VN')}₫
                     </span>
                     <span className="text-lg text-gray-500 line-through">
-                      {course.originalPrice}
+                      {(course.price_vnd * 1.3).toLocaleString('vi-VN')}₫
                     </span>
                   </div>
                   <Badge className="bg-red-100 text-red-700">Giảm 23%</Badge>
                 </div>
 
                 <div className="space-y-4 mb-6">
-                  <Button className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg">
-                    Đăng ký ngay
-                  </Button>
-                  <Button variant="outline" className="w-full h-12">
-                    Thêm vào giỏ hàng
-                  </Button>
+                  {isEnrolledInCourseBySlug(course.slug) ? (
+                    <div className="space-y-3">
+                      <Badge className="w-full justify-center bg-green-100 text-green-700 border-green-200 text-lg py-2">
+                        Đã sở hữu khóa học
+                      </Badge>
+                      <Button 
+                        className="w-full h-12 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        asChild
+                      >
+                        <Link to={`/course/${course.slug}/learn`}>
+                          Tiếp tục học
+                        </Link>
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Button 
+                        className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg"
+                        onClick={handlePurchaseNow}
+                        disabled={purchaseLoading || orderLoading}
+                      >
+                        {purchaseLoading || orderLoading ? "Đang xử lý..." : "Đăng ký ngay"}
+                      </Button>
+                      
+                      {isInCartItem ? (
+                        <Button 
+                          variant="outline" 
+                          className="w-full h-12"
+                          onClick={handleRemoveFromCart}
+                        >
+                          <Check className="mr-2" size={20} />
+                          Đã có trong giỏ hàng
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="outline" 
+                          className="w-full h-12"
+                          onClick={handleAddToCart}
+                        >
+                          <ShoppingCart className="mr-2" size={20} />
+                        Thêm vào giỏ hàng
+                      </Button>
+                      )}
+                    </>
+                  )}
                 </div>
 
                 <div className="text-center text-sm text-gray-600 mb-4">
@@ -414,11 +545,11 @@ export default function CourseDetail() {
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Số bài học:</span>
-                    <span className="font-medium">{course.lessons} videos</span>
+                    <span className="font-medium">24 videos</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Thời lượng:</span>
-                    <span className="font-medium">{course.duration}</span>
+                    <span className="font-medium">{course.duration_weeks} tuần</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Trình độ:</span>
@@ -428,7 +559,7 @@ export default function CourseDetail() {
                     <span className="text-gray-600">Ngôn ngữ:</span>
                     <span className="font-medium flex items-center">
                       <Globe className="w-4 h-4 mr-1" />
-                      {course.language}
+                      Tiếng Việt
                     </span>
                   </div>
                   <div className="flex items-center justify-between">

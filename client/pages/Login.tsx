@@ -10,11 +10,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { signIn, user } = useAuth();
+
+  // Redirect nếu đã đăng nhập
+  useEffect(() => {
+    console.log('Login page - user state:', user);
+    if (user) {
+      console.log('User already logged in, redirecting to home');
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 flex items-center justify-center p-4">
@@ -45,7 +62,30 @@ export default function Login() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={async (e) => {
+              e.preventDefault();
+              console.log('Form submitted');
+              if (!email || !password) {
+                toast.error("Vui lòng nhập đầy đủ thông tin");
+                return;
+              }
+              
+              try {
+                setLoading(true);
+                console.log('Calling signIn...');
+                await signIn(email, password);
+                console.log('SignIn completed successfully');
+                toast.success("Đăng nhập thành công!");
+                console.log('Navigating to home...');
+                navigate("/");
+              } catch (error) {
+                console.error('SignIn error:', error);
+                const errorMessage = error instanceof Error ? error.message : "Đăng nhập thất bại";
+                toast.error(errorMessage);
+              } finally {
+                setLoading(false);
+              }
+            }}>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -53,6 +93,9 @@ export default function Login() {
                   type="email"
                   placeholder="your.email@example.com"
                   className="h-11"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
 
@@ -64,6 +107,9 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Nhập mật khẩu"
                     className="h-11 pr-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
                   />
                   <button
                     type="button"
@@ -88,8 +134,12 @@ export default function Login() {
                 </Link>
               </div>
 
-              <Button className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                Đăng nhập
+              <Button 
+                type="submit"
+                className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                disabled={loading}
+              >
+                {loading ? "Đang đăng nhập..." : "Đăng nhập"}
               </Button>
             </form>
 
@@ -102,19 +152,11 @@ export default function Login() {
 
             <div className="space-y-3">
               <Button variant="outline" className="w-full h-11">
-                <img
-                  src="/images.jpg"
-                  alt="Google"
-                  className="w-5 h-5 mr-2"
-                />
+                <FaGoogle className="w-5 h-5 mr-2" />
                 Đăng nhập với Google
               </Button>
               <Button variant="outline" className="w-full h-11">
-                <img
-                  src="/download.jpg"
-                  alt="Facebook"
-                  className="w-5 h-5 mr-2"
-                />
+                <FaFacebook className="w-5 h-5 mr-2" />
                 Đăng nhập với Facebook
               </Button>
             </div>
