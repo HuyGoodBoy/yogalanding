@@ -18,8 +18,15 @@ export default function TransactionHistory() {
   
   const [activeTab, setActiveTab] = useState('transactions')
 
+  // Debug: Log transactions to see the structure
+  console.log('Transactions:', transactions)
+  console.log('Balance:', balance)
+
   // Format số tiền với dấu chấm
-  const formatDisplayAmount = (amount: number) => {
+  const formatDisplayAmount = (amount: number | null | undefined) => {
+    if (amount === null || amount === undefined) {
+      return '0'
+    }
     return amount.toLocaleString('vi-VN')
   }
 
@@ -192,9 +199,9 @@ export default function TransactionHistory() {
                           </div>
                           <div className="text-right">
                             <p className={`font-bold text-lg ${
-                              transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
+                              (transaction.amount || transaction.amount_vnd || 0) > 0 ? 'text-green-600' : 'text-red-600'
                             }`}>
-                              {transaction.amount > 0 ? '+' : ''}{formatDisplayAmount(transaction.amount)} VND
+                              {(transaction.amount || transaction.amount_vnd || 0) > 0 ? '+' : ''}{formatDisplayAmount(transaction.amount || transaction.amount_vnd)} VND
                             </p>
                             <Badge variant="outline" className="mt-1">
                               {transaction.status === 'completed' ? 'Hoàn thành' : 'Đang xử lý'}

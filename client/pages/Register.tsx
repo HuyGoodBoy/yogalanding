@@ -143,7 +143,7 @@ export default function Register() {
 
             <Button
               type="submit"
-                              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700"
+                              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-600 hover:to-pink-700"
               disabled={loading}
             >
               {loading ? "Đang đăng ký..." : "Đăng ký"}

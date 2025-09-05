@@ -28,14 +28,18 @@ import { useCourses } from "@/hooks/use-courses";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { useEnrollments } from "@/hooks/use-enrollments";
+import { useAdmin } from "@/hooks/use-admin";
 import { toast } from "sonner";
 
 export default function Index() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { courses, loading: coursesLoading, error: coursesError } = useCourses();
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { totalItems } = useCart();
   const { isEnrolledInCourseBySlug } = useEnrollments();
+  
+  // Check admin status from profile
+  const isAdmin = profile?.is_admin === true || profile?.role === 'admin';
   const navigate = useNavigate();
 
   const handleChoosePlan = (planName: string) => {
@@ -67,68 +71,92 @@ export default function Index() {
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <a
-                href="#courses"
-                className="text-gray-700 hover:text-purple-600 transition-colors"
-              >
-                Khóa học
-              </a>
+            <nav className="hidden md:flex items-center space-x-6">
+              {/* Main Navigation Links */}
+              <div className="flex items-center space-x-6">
+                <a
+                  href="#courses"
+                  className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
+                >
+                  Khóa học
+                </a>
+                <a
+                  href="#testimonials"
+                  className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
+                >
+                  Đánh giá
+                </a>
+                <a
+                  href="#pricing"
+                  className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
+                >
+                  Giá cả
+                </a>
+              </div>
 
-              <a
-                href="#testimonials"
-                className="text-gray-700 hover:text-purple-600 transition-colors"
-              >
-                Đánh giá
-              </a>
-              <a
-                href="#pricing"
-                className="text-gray-700 hover:text-purple-600 transition-colors"
-              >
-                Giá cả
-              </a>
-              
               {/* Cart Icon */}
-              <Link to="/cart" className="relative">
-                <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-purple-600 transition-colors" />
+              <Link to="/cart" className="relative p-2 rounded-lg hover:bg-purple-50 transition-colors">
+                <ShoppingCart className="w-5 h-5 text-gray-700 hover:text-purple-600" />
                 {totalItems > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500">
+                  <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs bg-red-500">
                     {totalItems}
                   </Badge>
                 )}
               </Link>
               
-              {/* Recharge Link */}
-              {user && (
-                <Link to="/recharge" className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors">
-                  <Wallet className="w-5 h-5" />
-                  <span className="hidden md:block">Nạp tiền</span>
-                </Link>
-              )}
-              
+              {/* Separator */}
+              {user && <div className="w-px h-6 bg-gray-300"></div>}
+
               {/* User Menu Links */}
               {user && (
-                <>
-                  <Link to="/my-courses" className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors">
-                    <BookOpen className="w-5 h-5" />
-                    <span className="hidden md:block">Khóa học của tôi</span>
+                <div className="flex items-center space-x-2">
+                  <Link 
+                    to="/my-courses" 
+                    className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors px-3 py-2 rounded-lg hover:bg-purple-50"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span>Khóa học của tôi</span>
                   </Link>
-                  <Link to="/transaction-history" className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors">
-                    <Wallet className="w-5 h-5" />
-                    <span className="hidden md:block">Lịch sử giao dịch</span>
+                  <Link 
+                    to="/recharge" 
+                    className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors px-3 py-2 rounded-lg hover:bg-purple-50"
+                  >
+                    <Wallet className="w-4 h-4" />
+                    <span>Nạp tiền</span>
                   </Link>
-                  <Link to="/admin" className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors">
-                    <Users className="w-5 h-5" />
-                    <span className="hidden md:block">Admin</span>
+                  <Link 
+                    to="/transaction-history" 
+                    className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors px-3 py-2 rounded-lg hover:bg-purple-50"
+                  >
+                    <Wallet className="w-4 h-4" />
+                    <span>Lịch sử</span>
                   </Link>
-                </>
+                  {/* Admin Link - Only show for admins */}
+                  {isAdmin && (
+                    <Link 
+                      to="/admin" 
+                      className="flex items-center space-x-2 text-white bg-purple-600 hover:bg-purple-700 transition-colors px-3 py-2 rounded-lg"
+                    >
+                      <Users className="w-4 h-4" />
+                      <span>Admin</span>
+                    </Link>
+                  )}
+                </div>
               )}
+
+              {/* Separator */}
+              <div className="w-px h-6 bg-gray-300"></div>
               
               {user ? (
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-600">
-                    Xin chào, {user.email}
-                  </span>
+                <div className="flex items-center space-x-3">
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-gray-900">
+                      {user.full_name || user.email?.split('@')[0]}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {isAdmin ? 'Quản trị viên' : 'Học viên'}
+                    </p>
+                  </div>
                   <Button
                     variant="outline"
                     size="sm"
@@ -157,7 +185,7 @@ export default function Index() {
                     <Link to="/login">Đăng nhập</Link>
                   </Button>
                   <Button
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-600 hover:to-pink-700"
                     asChild
                   >
                     <Link to="/register">Dùng thử miễn phí</Link>
@@ -233,23 +261,23 @@ export default function Index() {
                       Đăng xuất
                     </Button>
                   </div>
-                ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="border-purple-200 text-purple-600 hover:bg-purple-50"
-                      asChild
-                    >
-                      <Link to="/login">Đăng nhập</Link>
-                    </Button>
-                    <Button
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                      asChild
-                    >
-                      <Link to="/register">Dùng thử miễn phí</Link>
-                    </Button>
-                  </>
-                )}
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <Button
+                    variant="outline"
+                    className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                    asChild
+                  >
+                    <Link to="/login">Đăng nhập</Link>
+                  </Button>
+                  <Button
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    asChild
+                  >
+                    <Link to="/register">Dùng thử miễn phí</Link>
+                  </Button>
+                </div>
+              )}
               </div>
             </nav>
           )}
@@ -280,7 +308,7 @@ export default function Index() {
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700 text-lg px-8 py-3"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-lg px-8 py-3"
                   asChild
                 >
                   <Link to="/register">
@@ -312,7 +340,7 @@ export default function Index() {
               </div>
             </div>
             <div className="relative">
-              <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-3xl p-8 transform rotate-3 shadow-2xl">
+              <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-3xl p-8 transform rotate-3 shadow-2xl">
                 <div className="bg-white rounded-2xl p-6 transform -rotate-3">
                   <img
                     src="/images.jpg"
@@ -328,7 +356,7 @@ export default function Index() {
                     </p>
                     <div className="flex items-center mt-2">
                       <div className="flex -space-x-2">
-                        <div className="w-6 h-6 bg-yellow-400 rounded-full border-2 border-white"></div>
+                        <div className="w-6 h-6 bg-purple-400 rounded-full border-2 border-white"></div>
                         <div className="w-6 h-6 bg-purple-600 rounded-full border-2 border-white"></div>
                         <div className="w-6 h-6 bg-purple-600 rounded-full border-2 border-white"></div>
                       </div>
@@ -430,7 +458,7 @@ export default function Index() {
                       </div>
                     ) : (
                                       <Button
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-600 hover:to-pink-700"
                   asChild
                 >
                   <Link to={`/course/${course.slug}`}>Đăng ký ngay</Link>
@@ -658,7 +686,7 @@ export default function Index() {
                   <Button
                     className={`w-full ${
                       plan.popular
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700"
+                        ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-600 hover:to-pink-700"
                         : "bg-gray-900 hover:bg-gray-800"
                     }`}
                     onClick={() => handleChoosePlan(plan.name)}

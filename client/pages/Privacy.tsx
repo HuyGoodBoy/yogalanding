@@ -12,13 +12,13 @@ export default function Privacy() {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <img src="/logo.jpg" alt="Yoga Thuý An" className="w-8 h-8 rounded-full object-cover" />
-              <span className="text-xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Yoga Thuý An
               </span>
             </Link>
             <Link
               to="/"
-              className="flex items-center text-gray-600 hover:text-yellow-600"
+              className="flex items-center text-gray-600 hover:text-purple-600"
             >
               <ArrowLeft className="mr-2" size={20} />
               Quay về trang chủ
@@ -31,7 +31,7 @@ export default function Privacy() {
         <div className="max-w-4xl mx-auto">
           <Card className="border-0 shadow-xl">
             <CardHeader className="text-center pb-6">
-              <Shield className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
+              <Shield className="w-12 h-12 text-purple-600 mx-auto mb-4" />
               <CardTitle className="text-3xl font-bold text-gray-900">
                 Chính sách bảo mật
               </CardTitle>
@@ -56,7 +56,7 @@ export default function Privacy() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     asChild
-                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-purple-700 hover:to-pink-700"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                   >
                     <Link to="/contact">Liên hệ hỗ trợ</Link>
                   </Button>

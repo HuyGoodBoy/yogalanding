@@ -212,6 +212,17 @@ export function useBalance() {
         throw new Error(`HTTP ${response.status}: ${errorText}`)
       }
 
+      // Handle 204 No Content response (successful payment)
+      if (response.status === 204) {
+        // Cập nhật số dư
+        await fetchBalance()
+        await fetchTransactions()
+        return {
+          success: true,
+          message: 'Thanh toán thành công!'
+        }
+      }
+
       const data = await response.json()
       
       if (data.success) {

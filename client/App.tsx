@@ -18,6 +18,9 @@ import Help from "./pages/Help";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import PasswordResetHandler from "./pages/PasswordResetHandler";
+import PasswordResetCustom from "./pages/PasswordResetCustom";
 import AuthCallback from "./pages/AuthCallback";
 import Cart from "./pages/Cart";
 import Payment from './pages/Payment'
@@ -27,6 +30,9 @@ import MockVNPay from './pages/MockVNPay'
 import TestQRCode from './pages/TestQRCode'
 import Recharge from './pages/Recharge'
 import Admin from './pages/Admin'
+import AdminUsers from './pages/AdminUsers'
+import AdminCourses from './pages/AdminCourses'
+import DebugAdmin from './pages/DebugAdmin'
 import SubscriptionPayment from './pages/SubscriptionPayment'
 import TransactionHistory from './pages/TransactionHistory'
 import MyCourses from './pages/MyCourses'
@@ -59,6 +65,9 @@ function App() {
         <Route path="/test-qr" element={<TestQRCode />} />
         <Route path="/recharge" element={<Recharge />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/courses" element={<AdminCourses />} />
+        <Route path="/debug-admin" element={<DebugAdmin />} />
         <Route path="/subscription-payment" element={<SubscriptionPayment />} />
         <Route path="/transaction-history" element={<TransactionHistory />} />
         <Route path="/my-courses" element={<MyCourses />} />
@@ -71,6 +80,9 @@ function App() {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/password-reset-handler" element={<PasswordResetHandler />} />
+                <Route path="/password-reset-custom" element={<PasswordResetCustom />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

@@ -8,16 +8,40 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Mail } from "lucide-react";
+import { ArrowLeft, Mail, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export default function ForgotPassword() {
   const [emailSent, setEmailSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setEmailSent(true);
+    setLoading(true);
+
+    try {
+      // Use Supabase SDK for password reset (this doesn't require authentication)
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/password-reset-custom`,
+      });
+
+      if (error) {
+        toast.error(`Gửi email thất bại: ${error.message}`);
+        return;
+      }
+
+      setEmailSent(true);
+      toast.success("Email đặt lại mật khẩu đã được gửi!");
+    } catch (error) {
+      console.error("Error sending reset email:", error);
+      toast.error("Có lỗi xảy ra, vui lòng thử lại");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,7 +49,7 @@ export default function ForgotPassword() {
       <div className="w-full max-w-md">
         <Link
           to="/login"
-          className="flex items-center text-yellow-600 hover:text-purple-700 mb-6"
+          className="flex items-center text-purple-600 hover:text-purple-700 mb-6"
         >
           <ArrowLeft className="mr-2" size={20} />
           Quay lại đăng nhập
@@ -35,7 +59,7 @@ export default function ForgotPassword() {
           <CardHeader className="text-center pb-6">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <img src="/logo.jpg" alt="Yoga Thuý An" className="w-10 h-10 rounded-full object-cover" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Yoga Thuý An
               </span>
             </div>
@@ -72,15 +96,26 @@ export default function ForgotPassword() {
                     type="email"
                     placeholder="your.email@example.com"
                     className="h-11"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full h-11 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-purple-700 hover:to-pink-700"
+                  className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  disabled={loading}
                 >
-                  Gửi link đặt lại mật khẩu
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Đang gửi...
+                    </>
+                  ) : (
+                    "Gửi link đặt lại mật khẩu"
+                  )}
                 </Button>
               </form>
             ) : (
@@ -106,7 +141,7 @@ export default function ForgotPassword() {
               Nhớ mật khẩu?{" "}
               <Link
                 to="/login"
-                className="text-yellow-600 hover:text-purple-700 font-medium"
+                className="text-purple-600 hover:text-purple-700 font-medium"
               >
                 Đăng nhập ngay
               </Link>

@@ -168,13 +168,13 @@ export default function Help() {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <img src="/logo.jpg" alt="Yoga Thuý An" className="w-8 h-8 rounded-full object-cover" />
-              <span className="text-xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Yoga Thuý An
               </span>
             </Link>
             <Link
               to="/"
-              className="flex items-center text-gray-600 hover:text-yellow-600"
+              className="flex items-center text-gray-600 hover:text-purple-600"
             >
               <ArrowLeft className="mr-2" size={20} />
               Quay về trang chủ
@@ -186,10 +186,10 @@ export default function Help() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 py-16">
         <div className="container mx-auto px-4 text-center">
-          <HelpCircle className="w-16 h-16 text-yellow-600 mx-auto mb-6" />
+          <HelpCircle className="w-16 h-16 text-purple-600 mx-auto mb-6" />
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Trung tâm
-            <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               {" "}
               trợ giúp
             </span>
@@ -231,7 +231,7 @@ export default function Help() {
                     >
                       <div className="flex items-start space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <IconComponent className="w-5 h-5 text-yellow-600" />
+                          <IconComponent className="w-5 h-5 text-purple-600" />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900 mb-1">
@@ -271,10 +271,10 @@ export default function Help() {
                   return (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-yellow-50 transition-colors cursor-pointer"
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer"
                     >
                       <div className="flex items-center space-x-3">
-                        <IconComponent className="w-5 h-5 text-yellow-600" />
+                        <IconComponent className="w-5 h-5 text-purple-600" />
                         <div>
                           <p className="font-medium text-gray-900">
                             {category.title}
@@ -440,7 +440,7 @@ export default function Help() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     asChild
-                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-purple-700 hover:to-pink-700"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                   >
                     <Link to="/contact">Liên hệ hỗ trợ</Link>
                   </Button>

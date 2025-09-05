@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useAdmin } from '../hooks/use-admin'
 import { Button } from '../components/ui/button'
@@ -16,12 +16,20 @@ import PageHeader from '../components/PageHeader'
 
 export default function CreateCourse() {
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const { isAdmin, adminProfile, loading: adminLoading } = useAdmin()
+  const [searchParams] = useSearchParams()
+  const { user, profile } = useAuth()
+  
+  // Check admin status from profile
+  const isAdmin = profile?.is_admin === true || profile?.role === 'admin'
+  
+  // Check if we're in edit mode
+  const editCourseId = searchParams.get('edit')
+  const isEditMode = !!editCourseId
   
   // Thêm state local để track admin status
   const [localIsAdmin, setLocalIsAdmin] = useState<boolean | null>(null)
   const [checkingAdmin, setCheckingAdmin] = useState(true)
+  const [adminLoading, setAdminLoading] = useState(false)
   
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -49,6 +57,64 @@ export default function CreateCourse() {
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Load course data for edit mode
+  const loadCourseForEdit = async (courseId: string) => {
+    try {
+      setLoading(true)
+      
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+      
+      // Get access token
+      const token = localStorage.getItem('supabase.auth.token')
+      if (!token) {
+        throw new Error('Không thể xác thực')
+      }
+      
+      const tokenData = JSON.parse(token)
+      const accessToken = tokenData?.currentSession?.access_token
+
+      const response = await fetch(`${supabaseUrl}/rest/v1/courses?id=eq.${courseId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Không thể tải dữ liệu khóa học')
+      }
+
+      const courses = await response.json()
+      if (courses && courses.length > 0) {
+        const course = courses[0]
+        setFormData({
+          title: course.title || '',
+          slug: course.slug || '',
+          description: course.description || '',
+          thumbnail_url: course.thumbnail_url || '',
+          level: course.level || 'Cơ bản',
+          duration_weeks: course.duration_weeks || 8,
+          price_vnd: course.price_vnd || 999000,
+          instructor: course.instructor || 'Phạm Diệu Thuý',
+          youtube_playlist_url: course.youtube_playlist_url || '',
+          status: course.status || 'published'
+        })
+        
+        if (course.thumbnail_url) {
+          setImagePreview(course.thumbnail_url)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading course:', error)
+      toast.error('Không thể tải dữ liệu khóa học')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Check admin access
   useEffect(() => {
@@ -84,9 +150,16 @@ export default function CreateCourse() {
     }
   }, [user, isAdmin, adminLoading, navigate])
 
-  // Auto-generate slug from title
+  // Load course data for edit mode
   useEffect(() => {
-    if (formData.title) {
+    if (isEditMode && editCourseId && isAdmin) {
+      loadCourseForEdit(editCourseId)
+    }
+  }, [isEditMode, editCourseId, isAdmin])
+
+  // Auto-generate slug from title (only in create mode)
+  useEffect(() => {
+    if (!isEditMode && formData.title) {
       const slug = formData.title
         .toLowerCase()
         .normalize('NFD')
@@ -98,7 +171,7 @@ export default function CreateCourse() {
       
       setFormData(prev => ({ ...prev, slug }))
     }
-  }, [formData.title])
+  }, [formData.title, isEditMode])
 
   // Handle image file selection
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -297,33 +370,55 @@ export default function CreateCourse() {
       const tokenData = JSON.parse(token)
       const accessToken = tokenData?.currentSession?.access_token
 
-      const response = await fetch(`${supabaseUrl}/rest/v1/courses`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseAnonKey,
-          'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({
-          ...formData,
-          price_vnd: parseInt(formData.price_vnd.toString()),
-          duration_weeks: parseInt(formData.duration_weeks.toString())
+      const courseData = {
+        ...formData,
+        price_vnd: parseInt(formData.price_vnd.toString()),
+        duration_weeks: parseInt(formData.duration_weeks.toString())
+      }
+
+      let response
+      if (isEditMode && editCourseId) {
+        // Update existing course
+        response = await fetch(`${supabaseUrl}/rest/v1/courses?id=eq.${editCourseId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': supabaseAnonKey,
+            'Authorization': `Bearer ${accessToken}`
+          },
+          body: JSON.stringify(courseData)
         })
-      })
+      } else {
+        // Create new course
+        response = await fetch(`${supabaseUrl}/rest/v1/courses`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': supabaseAnonKey,
+            'Authorization': `Bearer ${accessToken}`
+          },
+          body: JSON.stringify(courseData)
+        })
+      }
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Có lỗi xảy ra khi tạo khóa học')
+        throw new Error(errorData.message || `Có lỗi xảy ra khi ${isEditMode ? 'cập nhật' : 'tạo'} khóa học`)
       }
 
-      const newCourse = await response.json()
-      setCourseId(newCourse.id)
-      setSuccess(true)
-      toast.success('Tạo khóa học thành công!')
+      if (isEditMode) {
+        setSuccess(true)
+        toast.success('Cập nhật khóa học thành công!')
+      } else {
+        const newCourse = await response.json()
+        setCourseId(newCourse.id)
+        setSuccess(true)
+        toast.success('Tạo khóa học thành công!')
+      }
       
     } catch (error) {
-      console.error('Error creating course:', error)
-      toast.error(error instanceof Error ? error.message : 'Có lỗi xảy ra khi tạo khóa học')
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} course:`, error)
+      toast.error(error instanceof Error ? error.message : `Có lỗi xảy ra khi ${isEditMode ? 'cập nhật' : 'tạo'} khóa học`)
     } finally {
       setLoading(false)
     }
@@ -383,10 +478,10 @@ export default function CreateCourse() {
                 <CheckCircle className="h-16 w-16 text-green-500" />
               </div>
               <CardTitle className="text-2xl text-green-600">
-                Tạo khóa học thành công!
+                {isEditMode ? 'Cập nhật khóa học thành công!' : 'Tạo khóa học thành công!'}
               </CardTitle>
               <CardDescription>
-                Khóa học đã được tạo và sẵn sàng cho học viên đăng ký
+                {isEditMode ? 'Khóa học đã được cập nhật thành công' : 'Khóa học đã được tạo và sẵn sàng cho học viên đăng ký'}
               </CardDescription>
             </CardHeader>
             
@@ -460,10 +555,10 @@ export default function CreateCourse() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <PageHeader 
-          title="Tạo khóa học mới"
-          description="Tạo khóa học với video hướng dẫn từ YouTube"
-          backUrl="/admin"
-          backText="Về trang Admin"
+          title={isEditMode ? "Chỉnh sửa khóa học" : "Tạo khóa học mới"}
+          description={isEditMode ? "Chỉnh sửa thông tin khóa học" : "Tạo khóa học với video hướng dẫn từ YouTube"}
+          backUrl="/admin/courses"
+          backText="Về quản lý khóa học"
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -471,7 +566,7 @@ export default function CreateCourse() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Tạo khóa học</CardTitle>
+                <CardTitle>{isEditMode ? "Chỉnh sửa khóa học" : "Tạo khóa học"}</CardTitle>
                 <CardDescription>
                   Điền thông tin khóa học và liên kết với playlist YouTube
                 </CardDescription>
@@ -717,12 +812,12 @@ export default function CreateCourse() {
                       {loading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Đang tạo...
+                          {isEditMode ? 'Đang cập nhật...' : 'Đang tạo...'}
                         </>
                       ) : (
                         <>
                           <Save className="mr-2 h-4 w-4" />
-                          Tạo khóa học
+                          {isEditMode ? 'Cập nhật khóa học' : 'Tạo khóa học'}
                         </>
                       )}
                     </Button>

@@ -118,7 +118,7 @@
   }
 
   .gradient-button {
-    @apply bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700;
+    @apply bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-600 hover:to-pink-700;
   }
 
   .shadow-glow {

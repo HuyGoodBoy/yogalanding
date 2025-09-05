@@ -1,20 +1,49 @@
 import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
 
-export interface AdminProfile {
+export interface AdminUser {
   id: string
   email: string
-  full_name?: string
+  full_name: string
+  created_at: string
   is_admin: boolean
+  role: string
+}
+
+export interface UserEnrollment {
+  enrollment_id: string
+  course_id: string
+  course_title: string
+  course_slug: string
+  enrollment_status: string
+  source: string
+  start_at: string
+  created_at: string
+}
+
+export interface AdminCourse {
+  id: string
+  title: string
+  slug: string
+  price_vnd: number
+  instructor: string
+  status: string
+  created_at: string
 }
 
 export function useAdmin() {
-  const [isAdmin, setIsAdmin] = useState<boolean>(false)
-  const [adminProfile, setAdminProfile] = useState<AdminProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { user, profile } = useAuth()
+  const [users, setUsers] = useState<AdminUser[]>([])
+  const [courses, setCourses] = useState<AdminCourse[]>([])
+  const [userEnrollments, setUserEnrollments] = useState<UserEnrollment[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  
+  // Check if current user is admin
+  const isAdmin = profile?.is_admin === true || profile?.role === 'admin'
 
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-
+  // Helper function để lấy access token
   const getAccessToken = () => {
     try {
       const token = localStorage.getItem('supabase.auth.token')
@@ -28,98 +57,98 @@ export function useAdmin() {
     }
   }
 
-  const checkAdminStatus = async () => {
+  // Lấy danh sách tất cả users
+  const fetchAllUsers = async () => {
     try {
       setLoading(true)
-      console.log('Checking admin status...')
-      
+      setError(null)
+
       const accessToken = getAccessToken()
       if (!accessToken) {
-        console.log('No access token found')
-        setIsAdmin(false)
-        setAdminProfile(null)
-        return
+        throw new Error('Bạn cần đăng nhập để thực hiện thao tác này')
       }
 
-      // Lấy thông tin user từ auth
-      const userResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/rpc/get_all_users`, {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'apikey': supabaseAnonKey
-        }
-      })
-
-      if (!userResponse.ok) {
-        console.log('User response not ok:', userResponse.status)
-        setIsAdmin(false)
-        setAdminProfile(null)
-        return
-      }
-
-      const userData = await userResponse.json()
-      console.log('User data:', userData)
-
-      // Kiểm tra profile để xem có phải admin không
-      const profileResponse = await fetch(`${supabaseUrl}/rest/v1/profiles?select=*&id=eq.${userData.id}`, {
-        headers: {
-          'apikey': supabaseAnonKey,
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
           'Authorization': `Bearer ${accessToken}`
         }
       })
 
-      console.log('Profile response status:', profileResponse.status)
-
-      if (profileResponse.ok) {
-        const profiles = await profileResponse.json()
-        console.log('Profiles data:', profiles)
-        const profile = profiles[0]
-        console.log('Profile:', profile)
-        
-        if (profile && (profile.is_admin || profile.role === 'admin')) {
-          console.log('User is admin!')
-          setIsAdmin(true)
-          setAdminProfile({
-            id: profile.id,
-            email: userData.email, // Sử dụng email từ userData
-            full_name: profile.full_name,
-            is_admin: profile.is_admin || profile.role === 'admin'
-          })
-        } else {
-          console.log('User is not admin or profile not found')
-          setIsAdmin(false)
-          setAdminProfile(null)
-        }
-      } else {
-        console.log('Profile response not ok')
-        setIsAdmin(false)
-        setAdminProfile(null)
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
       }
-    } catch (error) {
-      console.error('Error checking admin status:', error)
-      setIsAdmin(false)
-      setAdminProfile(null)
+
+      const data = await response.json()
+      setUsers(data)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải danh sách users'
+      setError(errorMessage)
+      throw err
     } finally {
       setLoading(false)
     }
   }
 
-  const createRechargeCode = async (amount: number) => {
+  // Lấy danh sách tất cả courses
+  const fetchAllCourses = async () => {
     try {
+      setLoading(true)
+      setError(null)
+
       const accessToken = getAccessToken()
       if (!accessToken) {
-        throw new Error('Bạn cần đăng nhập để tạo mã nạp tiền')
+        throw new Error('Bạn cần đăng nhập để thực hiện thao tác này')
       }
 
-      const response = await fetch(`${supabaseUrl}/rest/v1/rpc/create_recharge_code`, {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/rpc/get_all_courses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': supabaseAnonKey,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+      setCourses(data)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải danh sách courses'
+      setError(errorMessage)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Lấy enrollments của user cụ thể
+  const fetchUserEnrollments = async (userId: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const accessToken = getAccessToken()
+      if (!accessToken) {
+        throw new Error('Bạn cần đăng nhập để thực hiện thao tác này')
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/rpc/get_user_enrollments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
           'Authorization': `Bearer ${accessToken}`
         },
         body: JSON.stringify({
-          p_amount_vnd: amount,
-          p_created_by: adminProfile?.id
+          p_user_id: userId
         })
       })
 
@@ -129,30 +158,37 @@ export function useAdmin() {
       }
 
       const data = await response.json()
-      
-      if (data.success) {
-        return data
-      } else {
-        throw new Error(data.error || 'Có lỗi xảy ra khi tạo mã nạp tiền')
-      }
+      setUserEnrollments(data)
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Có lỗi xảy ra khi tạo mã nạp tiền'
-      throw new Error(errorMessage)
+      const errorMessage = err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải enrollments'
+      setError(errorMessage)
+      throw err
+    } finally {
+      setLoading(false)
     }
   }
 
-  const getRechargeCodes = async () => {
+  // Thu hồi enrollment
+  const revokeEnrollment = async (enrollmentId: string) => {
     try {
+      setLoading(true)
+      setError(null)
+
       const accessToken = getAccessToken()
       if (!accessToken) {
-        return []
+        throw new Error('Bạn cần đăng nhập để thực hiện thao tác này')
       }
 
-      const response = await fetch(`${supabaseUrl}/rest/v1/recharge_codes?select=*&order=created_at.desc`, {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/rpc/revoke_enrollment`, {
+        method: 'POST',
         headers: {
-          'apikey': supabaseAnonKey,
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
           'Authorization': `Bearer ${accessToken}`
-        }
+        },
+        body: JSON.stringify({
+          p_enrollment_id: enrollmentId
+        })
       })
 
       if (!response.ok) {
@@ -161,23 +197,81 @@ export function useAdmin() {
       }
 
       const data = await response.json()
-      return data || []
+      return data
     } catch (err) {
-      console.error('Error fetching recharge codes:', err)
-      return []
+      const errorMessage = err instanceof Error ? err.message : 'Có lỗi xảy ra khi thu hồi enrollment'
+      setError(errorMessage)
+      throw err
+    } finally {
+      setLoading(false)
     }
   }
 
-  useEffect(() => {
-    checkAdminStatus()
-  }, [])
+  // Cấp enrollment trực tiếp
+  const grantEnrollmentDirect = async (userId: string, courseId: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const accessToken = getAccessToken()
+      if (!accessToken) {
+        throw new Error('Bạn cần đăng nhập để thực hiện thao tác này')
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/rpc/grant_enrollment_direct`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          p_user_id: userId,
+          p_course_id: courseId
+        })
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+      return data
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Có lỗi xảy ra khi cấp enrollment'
+      setError(errorMessage)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Placeholder functions for Admin page compatibility
+  const createRechargeCode = async (amount: number) => {
+    // This should be implemented if needed
+    throw new Error('createRechargeCode not implemented in new useAdmin hook')
+  }
+
+  const getRechargeCodes = async () => {
+    // This should be implemented if needed
+    throw new Error('getRechargeCodes not implemented in new useAdmin hook')
+  }
 
   return {
     isAdmin,
-    adminProfile,
+    adminProfile: profile,
+    users,
+    courses,
+    userEnrollments,
     loading,
+    error,
+    fetchAllUsers,
+    fetchAllCourses,
+    fetchUserEnrollments,
+    revokeEnrollment,
+    grantEnrollmentDirect,
     createRechargeCode,
-    getRechargeCodes,
-    refetch: checkAdminStatus
+    getRechargeCodes
   }
 }

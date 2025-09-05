@@ -9,6 +9,7 @@ export interface User {
 
 interface AuthContextType {
   user: User | null
+  profile: any | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, fullName: string) => Promise<void>
@@ -20,10 +21,48 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+  const fetchProfile = async (userId: string) => {
+    try {
+      console.log('Fetching profile for user:', userId)
+      
+      const token = localStorage.getItem('supabase.auth.token')
+      if (!token) return
+      
+      const tokenData = JSON.parse(token)
+      const accessToken = tokenData?.currentSession?.access_token
+      if (!accessToken) return
+
+      const response = await fetch(`${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=*`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'apikey': supabaseAnonKey
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log('Profile data received:', data)
+        if (data && data.length > 0) {
+          setProfile(data[0])
+        } else {
+          console.log('No profile found for user')
+          setProfile(null)
+        }
+      } else {
+        console.log('Failed to fetch profile')
+        setProfile(null)
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+      setProfile(null)
+    }
+  }
 
   const checkUser = async () => {
     try {
@@ -70,6 +109,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           full_name: userData.user_metadata?.full_name,
           email_confirmed_at: userData.email_confirmed_at
         })
+        
+        // Fetch profile từ profiles table
+        await fetchProfile(userData.id)
       } else {
         // Token không hợp lệ, xóa khỏi localStorage
         console.log('User API failed, removing token')
@@ -133,11 +175,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('Setting user state:', userData)
       setUser(userData)
       
-      // Force re-check user để đảm bảo state được cập nhật
-      setTimeout(() => {
-        console.log('Re-checking user after sign in...')
-        checkUser()
-      }, 100)
+      // Fetch profile ngay sau khi đăng nhập
+      await fetchProfile(data.user.id)
     } catch (error) {
       console.error('Sign in error:', error)
       throw error
@@ -242,6 +281,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user,
+      profile,
       loading,
       signIn,
       signUp,

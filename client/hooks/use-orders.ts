@@ -176,6 +176,11 @@ export function useOrders() {
         throw new Error(`HTTP ${response.status}: ${errorText}`)
       }
 
+      // Handle 204 No Content response (successful update)
+      if (response.status === 204) {
+        return true
+      }
+
       return true
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Có lỗi xảy ra khi cập nhật đơn hàng'

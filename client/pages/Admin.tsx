@@ -26,13 +26,17 @@ import PageHeader from '../components/PageHeader'
 
 export default function Admin() {
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const { isAdmin, adminProfile, loading, createRechargeCode, getRechargeCodes } = useAdmin()
+  const { user, profile } = useAuth()
+  const { createRechargeCode, getRechargeCodes } = useAdmin()
+  
+  // Check admin status from profile
+  const isAdmin = profile?.is_admin === true || profile?.role === 'admin'
   
   const [amount, setAmount] = useState('')
   const [processing, setProcessing] = useState(false)
   const [rechargeCodes, setRechargeCodes] = useState<any[]>([])
   const [loadingCodes, setLoadingCodes] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   // Format số tiền với dấu chấm
   const formatAmountInput = (value: string) => {
@@ -121,7 +125,8 @@ export default function Admin() {
     toast.success('Đã copy mã vào clipboard')
   }
 
-  if (loading) {
+  // Show loading only if we don't have user or profile yet
+  if (!user || (user && !profile)) {
     console.log('Admin component - still loading...')
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -133,25 +138,8 @@ export default function Admin() {
     )
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Bạn cần đăng nhập</CardTitle>
-            <CardDescription>Vui lòng đăng nhập để truy cập trang admin</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate('/login')} className="w-full">
-              Đăng nhập
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
 
-  console.log('Admin component - isAdmin:', isAdmin, 'loading:', loading, 'user:', user)
+  console.log('Admin component - isAdmin:', isAdmin, 'user:', user, 'profile:', profile)
   
   if (!isAdmin) {
     return (
@@ -195,11 +183,11 @@ export default function Admin() {
                 <div className="space-y-3">
                   <div>
                     <Label className="text-sm text-gray-600">Email:</Label>
-                    <p className="font-medium">{adminProfile?.email}</p>
+                    <p className="font-medium">{user?.email}</p>
                   </div>
                   <div>
                     <Label className="text-sm text-gray-600">Tên:</Label>
-                    <p className="font-medium">{adminProfile?.full_name || 'Chưa cập nhật'}</p>
+                    <p className="font-medium">{profile?.full_name || 'Chưa cập nhật'}</p>
                   </div>
                   <div>
                     <Label className="text-sm text-gray-600">Vai trò:</Label>
@@ -348,14 +336,64 @@ export default function Admin() {
           </Card>
         </div>
 
-        {/* Quản lý khóa học */}
+        {/* Quản lý học viên */}
+        <div className="mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Users className="mr-2 h-5 w-5" />
+                Quản lý học viên
+              </CardTitle>
+              <CardDescription>Xem và quản lý tất cả học viên trong hệ thống</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <Users className="w-6 h-6 text-blue-600" />
+                    <h3 className="font-semibold text-blue-800">Danh sách học viên</h3>
+                  </div>
+                  <p className="text-blue-700 text-sm mb-4">
+                    Xem tất cả học viên đã đăng ký, thông tin cá nhân và ngày tham gia.
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/admin/users')}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Xem danh sách học viên
+                  </Button>
+                </div>
+                
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <BookOpen className="w-6 h-6 text-green-600" />
+                    <h3 className="font-semibold text-green-800">Quản lý khóa học</h3>
+                  </div>
+                  <p className="text-green-700 text-sm mb-4">
+                    Xem danh sách tất cả khóa học, chỉnh sửa thông tin và trạng thái.
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/admin/courses')}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Quản lý khóa học
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tạo khóa học mới */}
         <div className="mt-8">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center">
                   <BookOpen className="mr-2 h-5 w-5" />
-                  Quản lý khóa học
+                  Tạo khóa học mới
                 </CardTitle>
                 <Button 
                   onClick={() => navigate('/create-course')}
@@ -366,7 +404,7 @@ export default function Admin() {
                 </Button>
               </div>
               <CardDescription>
-                Tạo và quản lý khóa học với tích hợp YouTube
+                Tạo khóa học mới với tích hợp YouTube và quản lý nội dung
               </CardDescription>
             </CardHeader>
             <CardContent>
