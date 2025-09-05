@@ -66,7 +66,7 @@ export default function PaymentManual() {
         <Card className="w-full">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <AlertCircle className="h-16 w-16 text-yellow-500" />
+              <AlertCircle className="h-16 w-16 text-purple-600" />
             </div>
             <CardTitle className="text-2xl text-gray-900">
               Xác nhận thanh toán thủ công

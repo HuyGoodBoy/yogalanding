@@ -25,7 +25,7 @@ export default function ForgotPassword() {
       <div className="w-full max-w-md">
         <Link
           to="/login"
-          className="flex items-center text-purple-600 hover:text-purple-700 mb-6"
+          className="flex items-center text-yellow-600 hover:text-purple-700 mb-6"
         >
           <ArrowLeft className="mr-2" size={20} />
           Quay lại đăng nhập
@@ -34,9 +34,9 @@ export default function ForgotPassword() {
         <Card className="border-0 shadow-xl">
           <CardHeader className="text-center pb-6">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <img src="/logo.jpg" alt="Thuý An yoga" className="w-10 h-10 rounded-full object-cover" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Thuý An yoga
+              <img src="/logo.jpg" alt="Yoga Thuý An" className="w-10 h-10 rounded-full object-cover" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+                Yoga Thuý An
               </span>
             </div>
 
@@ -78,7 +78,7 @@ export default function ForgotPassword() {
 
                 <Button
                   type="submit"
-                  className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  className="w-full h-11 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-purple-700 hover:to-pink-700"
                 >
                   Gửi link đặt lại mật khẩu
                 </Button>
@@ -106,7 +106,7 @@ export default function ForgotPassword() {
               Nhớ mật khẩu?{" "}
               <Link
                 to="/login"
-                className="text-purple-600 hover:text-purple-700 font-medium"
+                className="text-yellow-600 hover:text-purple-700 font-medium"
               >
                 Đăng nhập ngay
               </Link>

@@ -11,14 +11,14 @@ export default function Terms() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Thuý An yoga
+              <img src="/logo.jpg" alt="Yoga Thuý An" className="w-8 h-8 rounded-full object-cover" />
+              <span className="text-xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+                Yoga Thuý An
               </span>
             </Link>
             <Link
               to="/"
-              className="flex items-center text-gray-600 hover:text-purple-600"
+              className="flex items-center text-gray-600 hover:text-yellow-600"
             >
               <ArrowLeft className="mr-2" size={20} />
               Quay về trang chủ
@@ -31,7 +31,7 @@ export default function Terms() {
         <div className="max-w-4xl mx-auto">
           <Card className="border-0 shadow-xl">
             <CardHeader className="text-center pb-6">
-              <FileText className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <FileText className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
               <CardTitle className="text-3xl font-bold text-gray-900">
                 Điều khoản sử dụng
               </CardTitle>
@@ -40,7 +40,7 @@ export default function Terms() {
             <CardContent className="prose max-w-none">
               <p className="text-gray-700 leading-relaxed mb-6">
                 Trang này hiện đang được phát triển. Chúng tôi đang chuẩn bị nội
-                dung chi tiết về điều khoản sử dụng dịch vụ Thuý An yoga.
+                dung chi tiết về điều khoản sử dụng dịch vụ Yoga Thuý An.
               </p>
 
               <div className="bg-purple-50 p-6 rounded-lg text-center">
@@ -54,7 +54,7 @@ export default function Terms() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     asChild
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-purple-700 hover:to-pink-700"
                   >
                     <Link to="/contact">Liên hệ hỗ trợ</Link>
                   </Button>

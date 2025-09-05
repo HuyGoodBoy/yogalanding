@@ -47,10 +47,10 @@ export default function Login() {
         <Card className="border-0 shadow-xl">
           <CardHeader className="text-center pb-6">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <img src="/logo.jpg" alt="Thuý An yoga" className="w-10 h-10 rounded-full object-cover" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Thuý An yoga
-              </span>
+              <img src="/logo.jpg" alt="Yoga Thuý An" className="w-10 h-10 rounded-full object-cover" />
+                              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Yoga Thuý An
+                </span>
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900">
               Đăng nhập
@@ -136,7 +136,7 @@ export default function Login() {
 
               <Button 
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700"
                 disabled={loading}
               >
                 {loading ? "Đang đăng nhập..." : "Đăng nhập"}

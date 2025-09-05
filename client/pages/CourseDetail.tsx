@@ -154,9 +154,9 @@ export default function CourseDetail() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
+              <img src="/logo.jpg" alt="Yoga Thuý An" className="w-8 h-8 rounded-full object-cover" />
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Thuý An yoga
+                Yoga Thuý An
               </span>
             </Link>
             <Link
@@ -196,7 +196,7 @@ export default function CourseDetail() {
 
               <div className="flex items-center space-x-6 text-sm text-gray-600 mb-6">
                 <div className="flex items-center">
-                  <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
+                  <Star className="w-4 h-4 text-purple-600 fill-current mr-1" />
                   <span className="font-medium">4.9</span>
                   <span className="ml-1">(312 đánh giá)</span>
                 </div>
@@ -409,7 +409,7 @@ export default function CourseDetail() {
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className="w-5 h-5 text-yellow-500 fill-current"
+                                className="w-5 h-5 text-purple-600 fill-current"
                               />
                             ))}
                           </div>
@@ -458,7 +458,7 @@ export default function CourseDetail() {
                               {[...Array(review.rating)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className="w-4 h-4 text-yellow-500 fill-current"
+                                  className="w-4 h-4 text-purple-600 fill-current"
                                 />
                               ))}
                             </div>
@@ -610,7 +610,7 @@ export default function CourseDetail() {
                         {relatedCourse.price}
                       </span>
                       <div className="flex items-center text-gray-600">
-                        <Star className="w-3 h-3 text-yellow-500 fill-current mr-1" />
+                        <Star className="w-3 h-3 text-purple-600 fill-current mr-1" />
                         {relatedCourse.rating}
                       </div>
                     </div>

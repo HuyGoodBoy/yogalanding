@@ -71,14 +71,14 @@ export default function Contact() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Thuý An yoga
+              <img src="/logo.jpg" alt="Yoga Thuý An" className="w-8 h-8 rounded-full object-cover" />
+              <span className="text-xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+                Yoga Thuý An
               </span>
             </Link>
             <Link
               to="/"
-              className="flex items-center text-gray-600 hover:text-purple-600"
+              className="flex items-center text-gray-600 hover:text-yellow-600"
             >
               <ArrowLeft className="mr-2" size={20} />
               Quay về trang chủ
@@ -92,7 +92,7 @@ export default function Contact() {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Liên hệ với
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
               {" "}
               chúng tôi
             </span>
@@ -203,12 +203,12 @@ export default function Contact() {
                       className="rounded border-gray-300"
                     />
                     <Label htmlFor="consent" className="text-sm text-gray-600">
-                      Tôi đồng ý với việc Thuý An yoga sử dụng thông tin này để liên
+                      Tôi đồng ý với việc Yoga Thuý An sử dụng thông tin này để liên
                       hệ và hỗ trợ tôi.
                     </Label>
                   </div>
 
-                  <Button className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg">
+                  <Button className="w-full h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-purple-700 hover:to-pink-700 text-lg">
                     Gửi tin nhắn
                   </Button>
                 </form>
@@ -231,7 +231,7 @@ export default function Contact() {
                   return (
                     <div key={index} className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <IconComponent className="w-6 h-6 text-purple-600" />
+                        <IconComponent className="w-6 h-6 text-yellow-600" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900 mb-1">
@@ -269,7 +269,7 @@ export default function Contact() {
                     >
                       <div className="flex items-start space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <IconComponent className="w-5 h-5 text-purple-600" />
+                          <IconComponent className="w-5 h-5 text-yellow-600" />
                         </div>
                         <div>
                           <h4 className="font-semibold text-gray-900 mb-1">
@@ -408,8 +408,8 @@ export default function Contact() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
-                <span className="text-xl font-bold">Thuý An yoga</span>
+                        <img src="/logo.jpg" alt="Yoga Thuý An" className="w-8 h-8 rounded-full object-cover" />
+        <span className="text-xl font-bold">Yoga Thuý An</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Kết nối với chúng tôi để bắt đầu hành trình yoga của bạn.
@@ -466,7 +466,7 @@ export default function Contact() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Thuý An yoga. Tất cả quyền được bảo lưu.</p>
+            <p>&copy; 2024 Yoga Thuý An. Tất cả quyền được bảo lưu.</p>
           </div>
         </div>
       </footer>

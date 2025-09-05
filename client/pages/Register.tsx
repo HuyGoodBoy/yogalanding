@@ -68,7 +68,7 @@ export default function Register() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <img src="/logo.jpg" alt="Thuý An yoga" className="w-12 h-12 rounded-full object-cover" />
+                          <img src="/logo.jpg" alt="Yoga Thuý An" className="w-12 h-12 rounded-full object-cover" />
           </div>
           <CardTitle className="text-2xl font-bold">Đăng ký tài khoản</CardTitle>
           <CardDescription>
@@ -143,7 +143,7 @@ export default function Register() {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700"
               disabled={loading}
             >
               {loading ? "Đang đăng ký..." : "Đăng ký"}

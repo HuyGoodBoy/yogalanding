@@ -62,7 +62,7 @@ export default function Index() {
             <div className="flex items-center space-x-2">
               <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Thuý An yoga
+                Yoga Thuý An
               </span>
             </div>
 
@@ -157,7 +157,7 @@ export default function Index() {
                     <Link to="/login">Đăng nhập</Link>
                   </Button>
                   <Button
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700"
                     asChild
                   >
                     <Link to="/register">Dùng thử miễn phí</Link>
@@ -262,7 +262,7 @@ export default function Index() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <Badge className="mb-4 bg-purple-100 text-purple-700 hover:bg-purple-100">
-                🧘‍♀️ Thuý An yoga - Platform Yoga Online #1 Việt Nam
+                🧘‍♀️ Yoga Thuý An - Platform Yoga Online #1 Việt Nam
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Khám phá sức mạnh
@@ -280,7 +280,7 @@ export default function Index() {
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-3"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700 text-lg px-8 py-3"
                   asChild
                 >
                   <Link to="/register">
@@ -306,13 +306,13 @@ export default function Index() {
                   10,000+ học viên
                 </div>
                 <div className="flex items-center">
-                  <Star className="mr-2 text-yellow-500" size={16} />
+                  <Star className="mr-2 text-purple-600" size={16} />
                   4.9/5 đánh giá
                 </div>
               </div>
             </div>
             <div className="relative">
-              <div className="bg-gradient-to-r from-purple-400 to-pink-400 rounded-3xl p-8 transform rotate-3 shadow-2xl">
+              <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-3xl p-8 transform rotate-3 shadow-2xl">
                 <div className="bg-white rounded-2xl p-6 transform -rotate-3">
                   <img
                     src="/images.jpg"
@@ -328,9 +328,9 @@ export default function Index() {
                     </p>
                     <div className="flex items-center mt-2">
                       <div className="flex -space-x-2">
-                        <div className="w-6 h-6 bg-purple-400 rounded-full border-2 border-white"></div>
-                        <div className="w-6 h-6 bg-pink-400 rounded-full border-2 border-white"></div>
-                        <div className="w-6 h-6 bg-indigo-400 rounded-full border-2 border-white"></div>
+                        <div className="w-6 h-6 bg-yellow-400 rounded-full border-2 border-white"></div>
+                        <div className="w-6 h-6 bg-purple-600 rounded-full border-2 border-white"></div>
+                        <div className="w-6 h-6 bg-purple-600 rounded-full border-2 border-white"></div>
                       </div>
                       <span className="ml-2 text-sm text-gray-600">
                         +247 đang tham gia
@@ -409,7 +409,7 @@ export default function Index() {
                       <span className="text-2xl font-bold text-purple-600">
                         {course.price_vnd.toLocaleString('vi-VN')}₫
                       </span>
-                      <div className="flex items-center text-yellow-500">
+                      <div className="flex items-center text-purple-600">
                         <Star size={16} fill="currentColor" />
                         <span className="ml-1 text-gray-600">4.9</span>
                       </div>
@@ -429,12 +429,12 @@ export default function Index() {
                         </Button>
                       </div>
                     ) : (
-                      <Button
-                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                        asChild
-                      >
-                        <Link to={`/course/${course.slug}`}>Đăng ký ngay</Link>
-                      </Button>
+                                      <Button
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700"
+                  asChild
+                >
+                  <Link to={`/course/${course.slug}`}>Đăng ký ngay</Link>
+                </Button>
                     )}
                   </CardFooter>
                 </Card>
@@ -449,7 +449,7 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Tại sao chọn Thuý An yoga?
+              Tại sao chọn Yoga Thuý An?
             </h2>
           </div>
 
@@ -539,7 +539,7 @@ export default function Index() {
                       <Star
                         key={i}
                         size={16}
-                        className="text-yellow-500 fill-current"
+                        className="text-purple-600 fill-current"
                       />
                     ))}
                   </div>
@@ -658,7 +658,7 @@ export default function Index() {
                   <Button
                     className={`w-full ${
                       plan.popular
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                        ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-yellow-600 hover:to-pink-700"
                         : "bg-gray-900 hover:bg-gray-800"
                     }`}
                     onClick={() => handleChoosePlan(plan.name)}
@@ -708,11 +708,11 @@ export default function Index() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
-                <span className="text-xl font-bold">Thuý An yoga</span>
+                        <img src="/logo.jpg" alt="Yoga Thuý An" className="w-8 h-8 rounded-full object-cover" />
+        <span className="text-xl font-bold">Yoga Thuý An</span>
               </div>
               <p className="text-gray-400 mb-4">
-                Thuý An yoga - Platform yoga online hàng đầu Việt Nam, mang đến trải nghiệm tập
+                Yoga Thuý An - Platform yoga online hàng đầu Việt Nam, mang đến trải nghiệm tập
                 luyện tuyệt vời nhất.
               </p>
               <div className="flex space-x-4">
@@ -788,7 +788,7 @@ export default function Index() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Thuý An yoga. Tất cả quyền được bảo lưu.</p>
+            <p>&copy; 2024 Yoga Thuý An. Tất cả quyền được bảo lưu.</p>
           </div>
         </div>
       </footer>

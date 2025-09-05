@@ -45,7 +45,7 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <Router>
+            <Router basename="/">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />

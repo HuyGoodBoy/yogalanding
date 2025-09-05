@@ -55,7 +55,7 @@ export default function AuthCallback() {
         <CardContent className="text-center space-y-4">
           {status === 'loading' && (
             <>
-              <Loader2 className="w-12 h-12 text-purple-600 animate-spin mx-auto" />
+              <Loader2 className="w-12 h-12 text-yellow-600 animate-spin mx-auto" />
               <p className="text-gray-600">Đang xác nhận email...</p>
             </>
           )}

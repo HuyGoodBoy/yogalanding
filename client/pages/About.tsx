@@ -53,7 +53,7 @@ export default function About() {
       year: "2020",
       title: "Khởi đầu",
       description:
-        "Thuý An yoga được thành lập với sứ mệnh democratize yoga education tại Việt Nam.",
+        "Yoga Thuý An được thành lập với sứ mệnh democratize yoga education tại Việt Nam.",
     },
     {
       year: "2021",
@@ -97,14 +97,14 @@ export default function About() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Thuý An yoga
+              <img src="/logo.jpg" alt="Yoga Thuý An" className="w-8 h-8 rounded-full object-cover" />
+              <span className="text-xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+                Yoga Thuý An
               </span>
             </Link>
             <Link
               to="/"
-              className="flex items-center text-gray-600 hover:text-purple-600"
+              className="flex items-center text-gray-600 hover:text-yellow-600"
             >
               <ArrowLeft className="mr-2" size={20} />
               Quay về trang ch���
@@ -123,19 +123,19 @@ export default function About() {
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Yoga cho
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">
                   {" "}
                   mọi người
                 </span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Chúng tôi tin rằng yoga không chỉ dành cho một nhóm người nào
-                đó. Sứ mệnh của Thuý An yoga là làm cho yoga trở nên dễ tiếp cận,
+                đó. Sứ mệnh của Yoga Thuý An là làm cho yoga trở nên dễ tiếp cận,
                 chất lượng và phù hợp với mọi người Việt Nam.
               </p>
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-purple-700 hover:to-pink-700"
               >
                 Tham gia cộng đồng
               </Button>
@@ -171,7 +171,7 @@ export default function About() {
               return (
                 <div key={index} className="text-center">
                   <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="w-8 h-8 text-purple-600" />
+                    <IconComponent className="w-8 h-8 text-yellow-600" />
                   </div>
                   <h3 className="text-3xl font-bold text-gray-900 mb-2">
                     {stat.value}
@@ -243,7 +243,7 @@ export default function About() {
               return (
                 <div key={index} className="text-center group">
                   <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:from-purple-200 group-hover:to-pink-200 transition-colors">
-                    <IconComponent className="w-8 h-8 text-purple-600" />
+                    <IconComponent className="w-8 h-8 text-yellow-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     {value.title}
@@ -331,7 +331,7 @@ export default function About() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-pink-600">
+      <section className="py-16 bg-gradient-to-r from-yellow-500 to-yellow-600">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Sẵn sàng tham gia hành trình cùng chúng tôi?
@@ -343,14 +343,14 @@ export default function About() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              className="bg-white text-purple-600 hover:bg-gray-100"
+              className="bg-white text-yellow-600 hover:bg-gray-100"
             >
               Bắt đầu ngay hôm nay
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-purple-600"
+              className="border-2 border-white text-white hover:bg-white hover:text-yellow-600"
             >
               Liên hệ với chúng tôi
             </Button>
@@ -364,8 +364,8 @@ export default function About() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <img src="/logo.jpg" alt="Thuý An yoga" className="w-8 h-8 rounded-full object-cover" />
-                <span className="text-xl font-bold">Thuý An yoga</span>
+                        <img src="/logo.jpg" alt="Yoga Thuý An" className="w-8 h-8 rounded-full object-cover" />
+        <span className="text-xl font-bold">Yoga Thuý An</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Yoga cho mọi người, mọi lúc, mọi nơi.
@@ -429,7 +429,7 @@ export default function About() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Thuý An yoga. Tất cả quyền được bảo lưu.</p>
+            <p>&copy; 2024 Yoga Thuý An. Tất cả quyền được bảo lưu.</p>
           </div>
         </div>
       </footer>

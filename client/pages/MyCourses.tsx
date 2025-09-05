@@ -34,7 +34,7 @@ export default function MyCourses() {
   const getCourseStatus = (progress: number) => {
     if (progress === 0) return { label: 'Chưa bắt đầu', color: 'bg-gray-100 text-gray-700 border-gray-200' }
     if (progress < 50) return { label: 'Đang học', color: 'bg-blue-100 text-blue-700 border-blue-200' }
-    if (progress < 100) return { label: 'Gần hoàn thành', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' }
+    if (progress < 100) return { label: 'Gần hoàn thành', color: 'bg-yellow-100 text-purple-700 border-purple-200' }
     return { label: 'Hoàn thành', color: 'bg-green-100 text-green-700 border-green-200' }
   }
 
@@ -94,11 +94,11 @@ export default function MyCourses() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Đang học</p>
-                  <p className="text-2xl font-bold text-yellow-600">
+                  <p className="text-2xl font-bold text-purple-600">
                     {enrollments?.filter(e => getCourseProgress(e.course_id) > 0 && getCourseProgress(e.course_id) < 100).length || 0}
                   </p>
                 </div>
-                <Play className="w-8 h-8 text-yellow-600" />
+                <Play className="w-8 h-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
