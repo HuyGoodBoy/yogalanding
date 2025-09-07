@@ -247,15 +247,84 @@ export function useAdmin() {
     }
   }
 
-  // Placeholder functions for Admin page compatibility
+  // Tạo mã nạp tiền
   const createRechargeCode = async (amount: number) => {
-    // This should be implemented if needed
-    throw new Error('createRechargeCode not implemented in new useAdmin hook')
+    try {
+      setLoading(true)
+      setError(null)
+
+      const accessToken = getAccessToken()
+      if (!accessToken) {
+        throw new Error('Bạn cần đăng nhập để thực hiện thao tác này')
+      }
+
+      if (!user?.id) {
+        throw new Error('Không thể xác định người dùng')
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/rpc/create_recharge_code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          p_amount_vnd: amount,
+          p_created_by: user.id
+        })
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+      return data
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Có lỗi xảy ra khi tạo mã nạp tiền'
+      setError(errorMessage)
+      throw err
+    } finally {
+      setLoading(false)
+    }
   }
 
+  // Lấy danh sách mã nạp tiền
   const getRechargeCodes = async () => {
-    // This should be implemented if needed
-    throw new Error('getRechargeCodes not implemented in new useAdmin hook')
+    try {
+      setLoading(true)
+      setError(null)
+
+      const accessToken = getAccessToken()
+      if (!accessToken) {
+        throw new Error('Bạn cần đăng nhập để thực hiện thao tác này')
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/recharge_codes?select=*&order=created_at.desc`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+      return data
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải danh sách mã nạp tiền'
+      setError(errorMessage)
+      throw err
+    } finally {
+      setLoading(false)
+    }
   }
 
   return {

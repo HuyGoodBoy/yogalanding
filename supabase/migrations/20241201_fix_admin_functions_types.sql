@@ -181,7 +181,7 @@ BEGIN
   ) VALUES (
     p_user_id,
     p_course_id,
-    'admin_grant',
+    'admin',
     'active',
     now()
   ) ON CONFLICT (user_id, course_id) 
