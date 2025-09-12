@@ -36,6 +36,8 @@ export default function AdminCourses() {
   } = useAdmin()
 
   const [searchTerm, setSearchTerm] = useState('')
+  const [deletingCourseId, setDeletingCourseId] = useState<string | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
 
   // Kiểm tra quyền admin
   useEffect(() => {
@@ -74,6 +76,67 @@ export default function AdminCourses() {
       month: 'short',
       day: 'numeric'
     })
+  }
+
+  // Xóa khóa học
+  const deleteCourse = async (courseId: string) => {
+    try {
+      setDeletingCourseId(courseId)
+      
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+      
+      // Get access token
+      const token = localStorage.getItem('supabase.auth.token')
+      if (!token) {
+        throw new Error('Không thể xác thực')
+      }
+      
+      const tokenData = JSON.parse(token)
+      const accessToken = tokenData?.currentSession?.access_token
+
+      const response = await fetch(`${supabaseUrl}/rest/v1/courses?id=eq.${courseId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+
+      if (!response.ok) {
+        let errorMessage = 'Có lỗi xảy ra khi xóa khóa học'
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.message || errorMessage
+        } catch (e) {
+          const errorText = await response.text()
+          errorMessage = errorText || errorMessage
+        }
+        throw new Error(errorMessage)
+      }
+
+      toast.success('Xóa khóa học thành công!')
+      // Refresh danh sách khóa học
+      fetchAllCourses()
+      
+    } catch (error) {
+      console.error('Error deleting course:', error)
+      toast.error(error instanceof Error ? error.message : 'Có lỗi xảy ra khi xóa khóa học')
+    } finally {
+      setDeletingCourseId(null)
+      setShowDeleteConfirm(null)
+    }
+  }
+
+  // Xác nhận xóa
+  const confirmDelete = (courseId: string) => {
+    setShowDeleteConfirm(courseId)
+  }
+
+  // Hủy xóa
+  const cancelDelete = () => {
+    setShowDeleteConfirm(null)
   }
 
   if (!user || !isAdmin) {
@@ -220,6 +283,19 @@ export default function AdminCourses() {
                         <Edit className="h-4 w-4 mr-2" />
                         Sửa
                       </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => confirmDelete(course.id)}
+                        disabled={deletingCourseId === course.id}
+                      >
+                        {deletingCourseId === course.id ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4 mr-2" />
+                        )}
+                        Xóa
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -227,6 +303,48 @@ export default function AdminCourses() {
             ))
           )}
         </div>
+
+        {/* Delete Confirmation Dialog */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardHeader>
+                <CardTitle className="text-red-600">Xác nhận xóa khóa học</CardTitle>
+                <CardDescription>
+                  Bạn có chắc chắn muốn xóa khóa học này? Hành động này không thể hoàn tác.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={cancelDelete}
+                    disabled={deletingCourseId === showDeleteConfirm}
+                  >
+                    Hủy
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => deleteCourse(showDeleteConfirm)}
+                    disabled={deletingCourseId === showDeleteConfirm}
+                  >
+                    {deletingCourseId === showDeleteConfirm ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Đang xóa...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Xóa khóa học
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   )

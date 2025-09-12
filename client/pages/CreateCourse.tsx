@@ -234,7 +234,7 @@ export default function CreateCourse() {
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Upload error:', errorText)
-      throw new Error('Không thể upload ảnh lên server')
+      throw new Error(`Không thể upload ảnh lên server: ${errorText}`)
     }
 
     // Return the public URL
@@ -325,15 +325,12 @@ export default function CreateCourse() {
       newErrors.description = 'Vui lòng nhập mô tả khóa học'
     }
 
-    if (!formData.thumbnail_url.trim()) {
+    // Only require thumbnail if no image has been uploaded yet
+    if (!formData.thumbnail_url.trim() && !imagePreview) {
       newErrors.thumbnail_url = 'Vui lòng upload ảnh đại diện'
     }
 
-    if (!formData.youtube_playlist_url.trim()) {
-      newErrors.youtube_playlist_url = 'Vui lòng nhập URL playlist YouTube'
-    } else if (!formData.youtube_playlist_url.includes('youtube.com/playlist')) {
-      newErrors.youtube_playlist_url = 'URL phải là playlist YouTube hợp lệ'
-    }
+    // YouTube URL is optional, no validation needed
 
     if (formData.price_vnd <= 0) {
       newErrors.price_vnd = 'Giá khóa học phải lớn hơn 0'
@@ -358,6 +355,19 @@ export default function CreateCourse() {
     try {
       setLoading(true)
       
+      // If there's an image file that hasn't been uploaded yet, upload it first
+      let finalThumbnailUrl = formData.thumbnail_url
+      if (imageFile && !formData.thumbnail_url) {
+        try {
+          finalThumbnailUrl = await uploadImageToSupabase(imageFile)
+          toast.success('Upload ảnh thành công!')
+        } catch (error) {
+          console.warn('Supabase upload failed, using localStorage:', error)
+          finalThumbnailUrl = await saveImageToLocalStorage(imageFile)
+          toast.success('Lưu ảnh vào bộ nhớ local thành công!')
+        }
+      }
+      
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
       
@@ -372,13 +382,17 @@ export default function CreateCourse() {
 
       const courseData = {
         ...formData,
+        thumbnail_url: finalThumbnailUrl,
         price_vnd: parseInt(formData.price_vnd.toString()),
         duration_weeks: parseInt(formData.duration_weeks.toString())
       }
 
+      console.log('Submitting course data:', courseData)
+      
       let response
       if (isEditMode && editCourseId) {
         // Update existing course
+        console.log('Updating course:', editCourseId)
         response = await fetch(`${supabaseUrl}/rest/v1/courses?id=eq.${editCourseId}`, {
           method: 'PATCH',
           headers: {
@@ -390,6 +404,7 @@ export default function CreateCourse() {
         })
       } else {
         // Create new course
+        console.log('Creating new course')
         response = await fetch(`${supabaseUrl}/rest/v1/courses`, {
           method: 'POST',
           headers: {
@@ -400,18 +415,40 @@ export default function CreateCourse() {
           body: JSON.stringify(courseData)
         })
       }
+      
+      console.log('Response status:', response.status)
+      console.log('Response headers:', response.headers)
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || `Có lỗi xảy ra khi ${isEditMode ? 'cập nhật' : 'tạo'} khóa học`)
+        let errorMessage = `Có lỗi xảy ra khi ${isEditMode ? 'cập nhật' : 'tạo'} khóa học`
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.message || errorMessage
+        } catch (e) {
+          // If response is not JSON, get text
+          const errorText = await response.text()
+          errorMessage = errorText || errorMessage
+        }
+        throw new Error(errorMessage)
       }
 
       if (isEditMode) {
         setSuccess(true)
         toast.success('Cập nhật khóa học thành công!')
       } else {
-        const newCourse = await response.json()
-        setCourseId(newCourse.id)
+        // Try to parse response as JSON, but handle case where it might be empty
+        try {
+          const responseText = await response.text()
+          if (responseText) {
+            const newCourse = JSON.parse(responseText)
+            if (newCourse && newCourse.length > 0) {
+              setCourseId(newCourse[0].id)
+            }
+          }
+        } catch (e) {
+          console.warn('Could not parse course response:', e)
+          // Continue anyway as the course might have been created successfully
+        }
         setSuccess(true)
         toast.success('Tạo khóa học thành công!')
       }
@@ -697,6 +734,13 @@ export default function CreateCourse() {
                         {errors.thumbnail_url && (
                           <p className="text-red-500 text-sm">{errors.thumbnail_url}</p>
                         )}
+                        
+                        {/* Show upload status */}
+                        {imageFile && !formData.thumbnail_url && (
+                          <p className="text-blue-500 text-sm">
+                            Ảnh đã được chọn, sẽ được upload khi tạo khóa học
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -765,25 +809,25 @@ export default function CreateCourse() {
                         <Youtube className="w-6 h-6 text-red-600 mt-1" />
                         <div className="flex-1">
                           <h4 className="font-semibold text-blue-800 mb-2">
-                            Hướng dẫn tích hợp YouTube
+                            Tích hợp YouTube (tùy chọn)
                           </h4>
                           <ol className="text-blue-700 text-sm space-y-1">
-                            <li>1. Tải video hướng dẫn lên YouTube</li>
+                            <li>1. Tải video hướng dẫn lên YouTube (nếu có)</li>
                             <li>2. Tạo playlist cho khóa học</li>
                             <li>3. Sao chép URL playlist (VD: https://youtube.com/playlist?list=...)</li>
-                            <li>4. Dán vào ô bên dưới</li>
+                            <li>4. Dán vào ô bên dưới (không bắt buộc)</li>
                           </ol>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <Label htmlFor="youtube_playlist_url">URL Playlist YouTube *</Label>
+                      <Label htmlFor="youtube_playlist_url">URL Playlist YouTube (tùy chọn)</Label>
                       <Input
                         id="youtube_playlist_url"
                         value={formData.youtube_playlist_url}
                         onChange={(e) => handleInputChange('youtube_playlist_url', e.target.value)}
-                        placeholder="https://youtube.com/playlist?list=..."
+                        placeholder="https://youtube.com/playlist?list=... (không bắt buộc)"
                         className={errors.youtube_playlist_url ? 'border-red-500' : ''}
                       />
                       {errors.youtube_playlist_url && (
